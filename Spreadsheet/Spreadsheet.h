@@ -6,6 +6,7 @@
 class Spreadsheet {
 private:
     std::vector<Row> _rows;
+    size_t _biggestCellCount = 0;
 
 public:
     Spreadsheet(const char *fileName);
