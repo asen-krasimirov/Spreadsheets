@@ -1,3 +1,4 @@
+#pragma once
 #include "../MyString/MyString.h"
 
 struct StringCell {

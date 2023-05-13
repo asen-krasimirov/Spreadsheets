@@ -15,12 +15,6 @@ Spreadsheet::Spreadsheet(const char *fileName) {
 
     char buffer[MAX_BUFFER_SIZE];
 
-//    in.getline(buffer, MAX_BUFFER_SIZE);
-//    readHeadingRow(buffer);
-
-//    in.getline(buffer, MAX_BUFFER_SIZE);
-//    readAlignments(buffer);
-
     while (!in.eof()) {
         in.getline(buffer, MAX_BUFFER_SIZE);
         readRow(buffer, ',');
@@ -37,9 +31,7 @@ void Spreadsheet::readRow(const char *buffer, char delimiter) {
     size_t curCellCount = 0;
     while (!ss.eof()) {
         ss.getline(value, MAX_BUFFER_SIZE, delimiter);
-//        sanitizeInputValue(value);
-//        _rows.pushBack(StringCell(value));
-        newRow._cells.emplace_back(value);
+        newRow._cells.push_back(value);
         curCellCount++;
     }
 

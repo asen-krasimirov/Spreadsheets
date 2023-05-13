@@ -9,7 +9,7 @@ private:
     size_t _biggestCellCount = 0;
 
 public:
-    Spreadsheet(const char *fileName);
+    explicit Spreadsheet(const char *fileName);
 
     void print() const;
 
