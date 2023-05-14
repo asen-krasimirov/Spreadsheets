@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "../StringCell/StringCell.h"
+#include "../Cell/Cell.h"
 
 struct Row {
-    std::vector<StringCell> _cells;
+    std::vector<Cell*> _cells;
 
 };

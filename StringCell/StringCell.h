@@ -1,14 +1,10 @@
 #pragma once
-#include "../MyString/MyString.h"
 
-struct StringCell {
-    MyString _value;
+#include "../Cell/Cell.h"
 
-//public:
-//    StringCell() = default;
+class StringCell : public Cell {
+public:
+    StringCell() = default;
     StringCell(const char *value);
-//    const MyString &getValue() const;
-private:
-    void setValue(const MyString &value);
 
 };

@@ -2,6 +2,11 @@
 #include <sstream>
 #include "Spreadsheet.h"
 
+//#include "../Cell/Cell.h"
+#include "../StringCell/StringCell.h"
+#include "../IntCell/IntCell.h"
+#include "../BlankCell/BlankCell.h"
+
 namespace {
     const short MAX_BUFFER_SIZE = 1024;
 }
@@ -23,15 +28,24 @@ Spreadsheet::Spreadsheet(const char *fileName) {
     in.close();
 }
 
-void Spreadsheet::readRow(const char *buffer, char delimiter) {
+void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
     std::stringstream ss(buffer);
 
     Row newRow;
     char value[MAX_BUFFER_SIZE];
     size_t curCellCount = 0;
+
     while (!ss.eof()) {
         ss.getline(value, MAX_BUFFER_SIZE, delimiter);
-        newRow._cells.push_back(value);
+        // add check for dobule too
+
+        if (value[0] == '"') {
+            newRow._cells.push_back(new StringCell(value));
+        }
+        else {
+            newRow._cells.push_back(new IntCell(value));
+        }
+
         curCellCount++;
     }
 
@@ -41,7 +55,7 @@ void Spreadsheet::readRow(const char *buffer, char delimiter) {
 
     size_t blankCellsToAdd = _biggestCellCount - curCellCount;
     for (int i = 0; i < blankCellsToAdd; ++i) {
-        newRow._cells.push_back("");
+        newRow._cells.push_back(new BlankCell(""));
     }
 
     _rows.push_back(newRow);
@@ -51,7 +65,7 @@ void Spreadsheet::print() const {
     for (int i = 0; i < _rows.size(); ++i) {
         const Row &curRow = _rows[i];
         for (int y = 0; y < curRow._cells.size(); ++y) {
-            std::cout << curRow._cells[y]._value << " ";
+            std::cout << curRow._cells[y]->getValue() << " ";
         }
         std::cout << std::endl;
     }

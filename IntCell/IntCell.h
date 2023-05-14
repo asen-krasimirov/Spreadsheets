@@ -2,12 +2,9 @@
 
 #include "../Cell/Cell.h"
 
-class IntCell : Cell {
-    int _value;
-
-//    void setValue(int value) override;
-
+class IntCell : public Cell {
 public:
-    IntCell(int value);
+    IntCell() = default;
+    IntCell(const char *value);
 
 };
