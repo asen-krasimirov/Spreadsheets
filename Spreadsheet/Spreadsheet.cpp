@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include "Spreadsheet.h"
 
 #include "../utils/utils.h"
@@ -10,6 +11,21 @@
 
 namespace {
     const short MAX_BUFFER_SIZE = 1024;
+}
+
+void Spreadsheet::fillRow(Row &row, size_t blankCellsToAdd) {
+    for (int i = 0; i < blankCellsToAdd; ++i) {
+        row._cells.push_back(new BlankCell(""));
+    }
+}
+
+void Spreadsheet::saveCellWhiteSpaces(Row& row) {
+    for (int i = 0; i < row._cells.size(); ++i) {
+        size_t curLen = std::strlen(row._cells[i]->getValue().c_str());
+        if (curLen > _cellWhiteSpaces[i]) {
+            _cellWhiteSpaces[i] = curLen;
+        }
+    }
 }
 
 Spreadsheet::Spreadsheet(const char *fileName) {
@@ -24,6 +40,17 @@ Spreadsheet::Spreadsheet(const char *fileName) {
     while (!in.eof()) {
         in.getline(buffer, MAX_BUFFER_SIZE);
         readRow(buffer, ',');
+    }
+
+    for (int i = 0; i < _biggestCellCount; ++i) {
+        _cellWhiteSpaces.push_back(0);
+    }
+
+    for (int i = 0; i < _rows.size(); ++i) {
+        Row &curRow = _rows[i];
+
+        fillRow(curRow, _biggestCellCount - curRow._cells.size());
+        saveCellWhiteSpaces(curRow);
     }
 
     in.close();
@@ -54,13 +81,9 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
         curCellCount++;
     }
 
+    // find _biggestCellCount in advance
     if (curCellCount > _biggestCellCount) {
         _biggestCellCount = curCellCount;
-    }
-
-    size_t blankCellsToAdd = _biggestCellCount - curCellCount;
-    for (int i = 0; i < blankCellsToAdd; ++i) {
-        newRow._cells.push_back(new BlankCell(""));
     }
 
     _rows.push_back(newRow);
@@ -69,10 +92,27 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
 void Spreadsheet::print() const {
     for (int i = 0; i < _rows.size(); ++i) {
         const Row &curRow = _rows[i];
-        for (int y = 0; y < curRow._cells.size(); ++y) {
-            std::cout << curRow._cells[y]->getValue() << " ";
-        }
+
+        printRow(curRow);
+
         std::cout << std::endl;
+    }
+}
+
+void Spreadsheet::printRow(const Row &curRow) const {
+    for (int i = 0; i < curRow._cells.size(); ++i) {
+        std::cout << curRow._cells[i]->getValue();
+
+        printWhiteSpaces(curRow, i);
+
+        std::cout << " | ";
+    }
+}
+
+void Spreadsheet::printWhiteSpaces(const Row &curRow, int rowIndex) const {
+    size_t whiteSpaces = _cellWhiteSpaces[rowIndex] - std::strlen(curRow._cells[rowIndex]->getValue().c_str());
+    for (int j = 0; j < whiteSpaces; ++j) {
+        std::cout << " ";
     }
 }
 
