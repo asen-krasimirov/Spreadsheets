@@ -2,6 +2,7 @@
 #include <sstream>
 #include "Spreadsheet.h"
 
+#include "../utils/utils.h"
 //#include "../Cell/Cell.h"
 #include "../StringCell/StringCell.h"
 #include "../IntCell/IntCell.h"
@@ -37,9 +38,13 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
 
     while (!ss.eof()) {
         ss.getline(value, MAX_BUFFER_SIZE, delimiter);
-        // add check for dobule too
+        // add check for double too
+        // sanitize input (wight spaces, ...)
+        removeWhiteSpaces(value);
 
         if (value[0] == '"') {
+            parseEscapeSequences(value);
+            removeSurroundingChars(value, '"', 1);
             newRow._cells.push_back(new StringCell(value));
         }
         else {
