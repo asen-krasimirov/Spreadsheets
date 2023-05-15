@@ -20,7 +20,7 @@ private:
     static void fillRow(Row &row, size_t blankCellsToAdd);
     void saveCellWhiteSpaces(Row& row);
 
-    void printRow(const Row &currow) const;
+    void printRow(const Row &curRow) const;
     void printWhiteSpaces(const Row &curRow, int rowIndex) const;
 
 };

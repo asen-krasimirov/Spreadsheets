@@ -2,6 +2,37 @@
 
 #include "utils.h"
 
+unsigned getNumLen(int num) {
+    unsigned ctr = 0;
+    while (num > 0) {
+        ctr++;
+        num /= 10;
+    }
+    return ctr;
+}
+
+bool isDigit(char ch) {
+    return '0' <= ch && ch <= '9';
+}
+
+int parseNumber(const char* input) {
+    int result = 0;
+    int sign = 1;
+    int i = 0;
+
+    if (input[i] == '+' || input[i] == '-') {
+        sign = (input[i] == '-') ? -1 : 1;
+        i++;
+    }
+
+    while (isDigit(input[i])) {
+        result = result * 10 + (input[i] - '0');
+        i++;
+    }
+
+    return result * sign;
+}
+
 void removeSurroundingChars(char *str, char toRemove, unsigned limit) {
     int length = std::strlen(str);
     int start = 0;

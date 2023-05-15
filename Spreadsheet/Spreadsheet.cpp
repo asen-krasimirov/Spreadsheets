@@ -4,7 +4,6 @@
 #include "Spreadsheet.h"
 
 #include "../utils/utils.h"
-//#include "../Cell/Cell.h"
 #include "../StringCell/StringCell.h"
 #include "../IntCell/IntCell.h"
 #include "../BlankCell/BlankCell.h"
@@ -21,7 +20,7 @@ void Spreadsheet::fillRow(Row &row, size_t blankCellsToAdd) {
 
 void Spreadsheet::saveCellWhiteSpaces(Row& row) {
     for (int i = 0; i < row._cells.size(); ++i) {
-        size_t curLen = std::strlen(row._cells[i]->getValue().c_str());
+        size_t curLen = row._cells[i]->getWidth();
         if (curLen > _cellWhiteSpaces[i]) {
             _cellWhiteSpaces[i] = curLen;
         }
@@ -69,19 +68,22 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
         // sanitize input (wight spaces, ...)
         removeWhiteSpaces(value);
 
-        if (value[0] == '"') {
+        if (value[0] == '\0') {
+            newRow._cells.push_back(new BlankCell());
+        }
+        else if (value[0] == '"') {
             parseEscapeSequences(value);
             removeSurroundingChars(value, '"', 1);
             newRow._cells.push_back(new StringCell(value));
         }
         else {
-            newRow._cells.push_back(new IntCell(value));
+            int intValue = parseNumber(value);
+            newRow._cells.push_back(new IntCell(intValue));
         }
 
         curCellCount++;
     }
 
-    // find _biggestCellCount in advance
     if (curCellCount > _biggestCellCount) {
         _biggestCellCount = curCellCount;
     }
@@ -101,7 +103,8 @@ void Spreadsheet::print() const {
 
 void Spreadsheet::printRow(const Row &curRow) const {
     for (int i = 0; i < curRow._cells.size(); ++i) {
-        std::cout << curRow._cells[i]->getValue();
+//        std::cout << curRow._cells[i]->getValue();
+        curRow._cells[i]->printCell(std::cout);
 
         printWhiteSpaces(curRow, i);
 
@@ -110,7 +113,7 @@ void Spreadsheet::printRow(const Row &curRow) const {
 }
 
 void Spreadsheet::printWhiteSpaces(const Row &curRow, int rowIndex) const {
-    size_t whiteSpaces = _cellWhiteSpaces[rowIndex] - std::strlen(curRow._cells[rowIndex]->getValue().c_str());
+    size_t whiteSpaces = _cellWhiteSpaces[rowIndex] - curRow._cells[rowIndex]->getWidth();
     for (int j = 0; j < whiteSpaces; ++j) {
         std::cout << " ";
     }

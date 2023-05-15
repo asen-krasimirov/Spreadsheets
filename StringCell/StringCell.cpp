@@ -1,18 +1,13 @@
 #include "StringCell.h"
 
-//const MyString &StringCell::getValue() const {
-//    return _value;
-//}
-//
+StringCell::StringCell(const char *value) {
+    _value = value;
+}
 
-//void StringCell::setValue(const MyString &value) {
-//    _value = value;
-//}
+unsigned StringCell::getWidth() const {
+    return _value.length();
+}
 
-//StringCell::StringCell(const char *value) {
-//    setValue(value);
-//}
-
-StringCell::StringCell(const char *value) : Cell(value) {
-
+void StringCell::printCell(std::ostream &out) const {
+    out << _value;
 }

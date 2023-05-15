@@ -1,14 +1,12 @@
 #pragma once
-#include "../MyString/MyString.h"
+
+#include <iostream>
 
 class Cell {
-private:
-    MyString _value;
-
 public:
-    Cell() = default;
-    Cell(const char *value);
+    virtual ~Cell() = default; // no necessary if there are non variables (maybe)
 
-    const MyString &getValue() const;
-    void setValue(const MyString &value);
+    virtual unsigned getWidth() const = 0;
+    virtual void printCell(std::ostream &out) const = 0;
+
 };
