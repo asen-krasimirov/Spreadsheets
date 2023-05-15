@@ -1,6 +1,24 @@
+#include <cmath>    // for std::floor test
 #include <cstring>
 
 #include "utils.h"
+
+int getAbs(int num) {
+    return num >= 0 ? num : num * -1;
+}
+
+double getAbs(double num) {
+    return num >= 0 ? num : num * -1;
+}
+
+int getFloor(double number) {
+    int integerPart = (int)number;
+
+    if (number >= 0 || number == integerPart)
+        return integerPart;
+    else
+        return integerPart - 1;
+}
 
 unsigned getNumLen(int num) {
     unsigned ctr = 0;
@@ -11,12 +29,33 @@ unsigned getNumLen(int num) {
     return ctr;
 }
 
+unsigned getNumLen(double num) {
+    // TODO: not working
+
+    unsigned length = 0;
+    int integerPart = getAbs((int) num);
+    while (integerPart > 0) {
+        length++;
+        integerPart /= 10;
+    }
+
+    double decimalPart = getAbs(num) - getAbs((int) num);
+//    double decimalPart = getAbs(num) - getAbs(static_cast<int>(num));
+    while (getFloor(decimalPart) != decimalPart) {
+//    while (std::floor(decimalPart) != decimalPart) {
+        decimalPart *= 10;
+        length++;
+    }
+
+    return length;
+}
+
 bool isDigit(char ch) {
     return '0' <= ch && ch <= '9';
 }
 
-int parseNumber(const char* input) {
-    int result = 0;
+double parseDouble(const char* input) {
+    double result = 0.0;
     int sign = 1;
     int i = 0;
 
@@ -26,11 +65,25 @@ int parseNumber(const char* input) {
     }
 
     while (isDigit(input[i])) {
-        result = result * 10 + (input[i] - '0');
+        result = result * 10.0 + (input[i] - '0');
         i++;
     }
 
+    if (input[i] == '.') {
+        i++;
+        double divisor = 10.0;
+        while (isDigit(input[i])) {
+            result += (input[i] - '0') / divisor;
+            divisor *= 10.0;
+            i++;
+        }
+    }
+
     return result * sign;
+}
+
+int parseNumber(const char* input) {
+    return parseDouble(input);
 }
 
 void removeSurroundingChars(char *str, char toRemove, unsigned limit) {

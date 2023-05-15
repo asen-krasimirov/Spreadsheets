@@ -17,4 +17,3 @@ unsigned IntCell::getWidth() const {
 void IntCell::printCell(std::ostream &out) const {
     out << _value;
 }
-
