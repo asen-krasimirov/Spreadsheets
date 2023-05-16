@@ -1,6 +1,5 @@
 #include <fstream>
 #include <sstream>
-#include <cstring>
 #include "Spreadsheet.h"
 
 #include "../utils/utils.h"
@@ -29,6 +28,10 @@ void Spreadsheet::saveCellWhiteSpaces(Row& row) {
 }
 
 Spreadsheet::Spreadsheet(const char *fileName) {
+    loadFile(fileName);
+}
+
+void Spreadsheet::loadFile(const char *fileName) {
     std::ifstream in(fileName);
 
     if (!in.is_open()) {
@@ -37,6 +40,7 @@ Spreadsheet::Spreadsheet(const char *fileName) {
 
     char buffer[MAX_BUFFER_SIZE];
 
+    // TODO: validate table format (row format, cell format, ...)
     while (!in.eof()) {
         in.getline(buffer, MAX_BUFFER_SIZE);
         readRow(buffer, ',');
@@ -64,9 +68,8 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
     size_t curCellCount = 0;
 
     while (!ss.eof()) {
+        // TODO: validate cell format before casting and stop program upon exception
         ss.getline(value, MAX_BUFFER_SIZE, delimiter);
-        // add check for double too
-        // sanitize input (wight spaces, ...)
         removeWhiteSpaces(value);
 
         if (value[0] == '\0') {
@@ -78,11 +81,9 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
             newRow._cells.push_back(new StringCell(value));
         }
         else if (getCharCountInArray(value, '.') == 1) {
-//            double doubleValue = parseDouble(value);
             newRow._cells.push_back(new DoubleCell(value));
         }
         else {
-//            int intValue = parseNumber(value);
             newRow._cells.push_back(new IntCell(value));
         }
 
@@ -108,7 +109,6 @@ void Spreadsheet::print() const {
 
 void Spreadsheet::printRow(const Row &curRow) const {
     for (int i = 0; i < curRow._cells.size(); ++i) {
-//        std::cout << curRow._cells[i]->getValue();
         curRow._cells[i]->printCell(std::cout);
 
         printWhiteSpaces(curRow, i);

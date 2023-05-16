@@ -14,7 +14,10 @@ public:
 
     void print() const;
 
+    void loadFile(const char *fileName);
+
 private:
+
     void readRow(const char *buffer, char delimiter);
 
     static void fillRow(Row &row, size_t blankCellsToAdd);
