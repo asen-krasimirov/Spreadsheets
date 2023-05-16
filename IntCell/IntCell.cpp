@@ -3,11 +3,15 @@
 
 void IntCell::setValue(int value) {
     _value = value;
-    _length = getNumLen(value);
 }
 
-IntCell::IntCell(int value) {
-    setValue(value);
+void IntCell::setLength(unsigned length) {
+    _length = length;
+}
+
+IntCell::IntCell(const char *value) {
+    setValue(parseInt(value));
+    setLength(getNumLen(_value));
 }
 
 unsigned IntCell::getWidth() const {

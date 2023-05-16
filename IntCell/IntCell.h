@@ -8,10 +8,11 @@ private:
     unsigned _length = 0;
 
     void setValue(int value);
+    void setLength(unsigned length);
 
 public:
     IntCell() = default;
-    explicit IntCell(int value);
+    explicit IntCell(const char *value);
 
     unsigned getWidth() const override;
     void printCell(std::ostream &out) const override;

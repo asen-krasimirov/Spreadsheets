@@ -6,6 +6,7 @@
 #include "../utils/utils.h"
 #include "../StringCell/StringCell.h"
 #include "../IntCell/IntCell.h"
+#include "../DoubleCell/DoubleCell.h"
 #include "../BlankCell/BlankCell.h"
 
 namespace {
@@ -76,9 +77,13 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
             removeSurroundingChars(value, '"', 1);
             newRow._cells.push_back(new StringCell(value));
         }
+        else if (getCharCountInArray(value, '.') == 1) {
+//            double doubleValue = parseDouble(value);
+            newRow._cells.push_back(new DoubleCell(value));
+        }
         else {
-            int intValue = parseNumber(value);
-            newRow._cells.push_back(new IntCell(intValue));
+//            int intValue = parseNumber(value);
+            newRow._cells.push_back(new IntCell(value));
         }
 
         curCellCount++;

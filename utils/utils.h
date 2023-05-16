@@ -1,14 +1,22 @@
 #pragma once
 
+int getAbs(int num);
+
+double getAbs(double num);
+
 unsigned getNumLen(int num);
 
-unsigned getNumLen(double num);
+//unsigned getNumLen(double num);
+
+unsigned getCharCountInArray(const char *arr, char ch);
+
+bool isCharInArray(const char *arr, char ch);
 
 bool isDigit(char ch);
 
 double parseDouble(const char* input);
 
-int parseNumber(const char* input);
+int parseInt(const char* input);
 
 void removeSurroundingChars(char *str, char toRemove, unsigned limit = 0);
 

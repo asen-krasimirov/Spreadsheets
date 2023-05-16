@@ -29,25 +29,19 @@ unsigned getNumLen(int num) {
     return ctr;
 }
 
-unsigned getNumLen(double num) {
-    // TODO: not working
-
-    unsigned length = 0;
-    int integerPart = getAbs((int) num);
-    while (integerPart > 0) {
-        length++;
-        integerPart /= 10;
+unsigned getCharCountInArray(const char *arr, char ch) {
+    unsigned ctr = 0;
+    for (int i = 0; arr[i] != '\0'; ++i) {
+        if (arr[i] == ch) {
+            ctr++;
+        }
     }
 
-    double decimalPart = getAbs(num) - getAbs((int) num);
-//    double decimalPart = getAbs(num) - getAbs(static_cast<int>(num));
-    while (getFloor(decimalPart) != decimalPart) {
-//    while (std::floor(decimalPart) != decimalPart) {
-        decimalPart *= 10;
-        length++;
-    }
+    return ctr;
+}
 
-    return length;
+bool isCharInArray(const char *arr, char ch) {
+    return getCharCountInArray(arr, ch) > 0;
 }
 
 bool isDigit(char ch) {
@@ -82,7 +76,7 @@ double parseDouble(const char* input) {
     return result * sign;
 }
 
-int parseNumber(const char* input) {
+int parseInt(const char* input) {
     return parseDouble(input);
 }
 
