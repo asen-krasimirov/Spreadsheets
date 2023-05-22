@@ -14,12 +14,13 @@ namespace {
 
 void Spreadsheet::fillRow(Row &row, size_t blankCellsToAdd) {
     for (int i = 0; i < blankCellsToAdd; ++i) {
-        row._cells.push_back(new BlankCell(""));
+        UniquePointer<Cell> newCell = UniquePointer<Cell>((new BlankCell()));
+        row._cells.pushBack(std::move(newCell));
     }
 }
 
 void Spreadsheet::saveCellWhiteSpaces(Row& row) {
-    for (int i = 0; i < row._cells.size(); ++i) {
+    for (int i = 0; i < row._cells.getSize(); ++i) {
         size_t curLen = row._cells[i]->getWidth();
         if (curLen > _cellWhiteSpaces[i]) {
             _cellWhiteSpaces[i] = curLen;
@@ -47,13 +48,13 @@ void Spreadsheet::loadFile(const char *fileName) {
     }
 
     for (int i = 0; i < _biggestCellCount; ++i) {
-        _cellWhiteSpaces.push_back(0);
+        _cellWhiteSpaces.pushBack(0);
     }
 
-    for (int i = 0; i < _rows.size(); ++i) {
+    for (int i = 0; i < _rows.getSize(); ++i) {
         Row &curRow = _rows[i];
 
-        fillRow(curRow, _biggestCellCount - curRow._cells.size());
+        fillRow(curRow, _biggestCellCount - curRow._cells.getSize());
         saveCellWhiteSpaces(curRow);
     }
 
@@ -73,18 +74,18 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
         removeWhiteSpaces(value);
 
         if (value[0] == '\0') {
-            newRow._cells.push_back(new BlankCell());
+            newRow._cells.pushBack(UniquePointer<Cell>(new BlankCell()));
         }
         else if (value[0] == '"') {
             parseEscapeSequences(value);
             removeSurroundingChars(value, '"', 1);
-            newRow._cells.push_back(new StringCell(value));
+            newRow._cells.pushBack(UniquePointer<Cell>(new StringCell(value)));
         }
         else if (getCharCountInArray(value, '.') == 1) {
-            newRow._cells.push_back(new DoubleCell(value));
+            newRow._cells.pushBack(UniquePointer<Cell>(new DoubleCell(value)));
         }
         else {
-            newRow._cells.push_back(new IntCell(value));
+            newRow._cells.pushBack(UniquePointer<Cell>(new IntCell(value)));
         }
 
         curCellCount++;
@@ -94,11 +95,11 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
         _biggestCellCount = curCellCount;
     }
 
-    _rows.push_back(newRow);
+    _rows.pushBack(std::move(newRow));
 }
 
 void Spreadsheet::print() const {
-    for (int i = 0; i < _rows.size(); ++i) {
+    for (int i = 0; i < _rows.getSize(); ++i) {
         const Row &curRow = _rows[i];
 
         printRow(curRow);
@@ -108,7 +109,7 @@ void Spreadsheet::print() const {
 }
 
 void Spreadsheet::printRow(const Row &curRow) const {
-    for (int i = 0; i < curRow._cells.size(); ++i) {
+    for (int i = 0; i < curRow._cells.getSize(); ++i) {
         curRow._cells[i]->printCell(std::cout);
 
         printWhiteSpaces(curRow, i);

@@ -1,12 +1,13 @@
 #pragma once
 
-#include <vector>
+//#include <vector>
+#include "../structs/Vector.hpp"
 #include "../Row/Row.h"
 
 class Spreadsheet {
 private:
-    std::vector<Row> _rows;
-    std::vector<size_t> _cellWhiteSpaces;
+    Vector<Row> _rows;
+    Vector<size_t> _cellWhiteSpaces;
     size_t _biggestCellCount = 0;
 
 public:

@@ -4,7 +4,6 @@
 
 class BlankCell : public StringCell {
 public:
-    BlankCell() = default;
-    BlankCell(const char *value);
+    BlankCell();
 
 };

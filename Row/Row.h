@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
+#include "../structs/Vector.hpp"
+#include "../structs/UniquePointer.hpp"
 #include "../Cell/Cell.h"
 
 struct Row {
-    std::vector<Cell*> _cells;
+    Vector<UniquePointer<Cell>> _cells;
 
 };
