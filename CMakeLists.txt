@@ -9,7 +9,6 @@ add_executable(Spreadsheets
         structs/Vector.hpp
         structs/UniquePointer.hpp
 
-
         MyString/MyString.h MyString/MyString.cpp
 
         Spreadsheet/Spreadsheet.h Spreadsheet/Spreadsheet.cpp
@@ -21,6 +20,7 @@ add_executable(Spreadsheets
         StringCell/StringCell.h StringCell/StringCell.cpp
         IntCell/IntCell.h IntCell/IntCell.cpp
         DoubleCell/DoubleCell.h DoubleCell/DoubleCell.cpp
+        FormulaCell/FormulaCell.h FormulaCell/FormulaCell.cpp
 
         CommandMenu/CommandMenu.h CommandMenu/CommandMenu.cpp
         )

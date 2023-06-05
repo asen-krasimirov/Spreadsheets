@@ -11,7 +11,6 @@ private:
     void setLength(unsigned length);
 
 public:
-    IntCell() = default;
     explicit IntCell(const char *value);
 
     unsigned getWidth() const override;

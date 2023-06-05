@@ -8,7 +8,6 @@ private:
     MyString _value;
 
 public:
-    StringCell() = default;
     explicit StringCell(const char *value);
 
     unsigned getWidth() const override;
