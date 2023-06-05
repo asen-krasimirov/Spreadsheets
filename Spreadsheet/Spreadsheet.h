@@ -1,7 +1,7 @@
 #pragma once
 
-//#include <vector>
 #include "../structs/Vector.hpp"
+#include "../structs/UniquePointer.hpp"
 #include "../Row/Row.h"
 
 class Spreadsheet {

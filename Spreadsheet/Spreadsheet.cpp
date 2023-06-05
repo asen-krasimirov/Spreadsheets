@@ -14,8 +14,7 @@ namespace {
 
 void Spreadsheet::fillRow(Row &row, size_t blankCellsToAdd) {
     for (int i = 0; i < blankCellsToAdd; ++i) {
-        UniquePointer<Cell> newCell = UniquePointer<Cell>((new BlankCell()));
-        row._cells.pushBack(std::move(newCell));
+        row._cells.pushBack(new BlankCell());
     }
 }
 
@@ -74,18 +73,18 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
         removeWhiteSpaces(value);
 
         if (value[0] == '\0') {
-            newRow._cells.pushBack(UniquePointer<Cell>(new BlankCell()));
+            newRow._cells.pushBack(new BlankCell());
         }
         else if (value[0] == '"') {
             parseEscapeSequences(value);
             removeSurroundingChars(value, '"', 1);
-            newRow._cells.pushBack(UniquePointer<Cell>(new StringCell(value)));
+            newRow._cells.pushBack(new StringCell(value));
         }
         else if (getCharCountInArray(value, '.') == 1) {
-            newRow._cells.pushBack(UniquePointer<Cell>(new DoubleCell(value)));
+            newRow._cells.pushBack(new DoubleCell(value));
         }
         else {
-            newRow._cells.pushBack(UniquePointer<Cell>(new IntCell(value)));
+            newRow._cells.pushBack(new IntCell(value));
         }
 
         curCellCount++;

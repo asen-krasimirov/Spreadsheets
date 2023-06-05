@@ -1,4 +1,3 @@
-#include <cmath>    // for std::floor test
 #include <cstring>
 
 #include "utils.h"

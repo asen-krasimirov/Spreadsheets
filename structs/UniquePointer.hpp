@@ -1,3 +1,4 @@
+// From Georgi Terziev's repo
 #pragma once
 
 #include <utility>
@@ -9,23 +10,19 @@ private:
 
 public:
     UniquePointer();
-    UniquePointer(T* ptr);
     UniquePointer(const UniquePointer<T>& ptr) = delete;
     UniquePointer& operator=(const UniquePointer<T>& ptr) = delete;
-
     UniquePointer(UniquePointer<T>&& other) noexcept;
     UniquePointer& operator=(UniquePointer<T>&& other) noexcept;
+    ~UniquePointer();
+
+    UniquePointer(T* ptr);
 
     T* operator->();
     const T* operator->() const;
     T& operator*();
     const T& operator*() const;
 
-    T* get();
-    void reset(T* ptr);
-    T* release(); // releases the ownership of the pointer
-
-    ~UniquePointer();
 private:
     void move(UniquePointer<T>&& other) noexcept;
     void free();
@@ -77,27 +74,6 @@ const T& UniquePointer<T>::operator*() const {
     return *ptr;
 }
 
-template<typename T>
-T* UniquePointer<T>::get() {
-    return this->ptr;
-}
-
-template<typename T>
-void UniquePointer<T>::reset(T* ptr) {
-    if (this->ptr == ptr) {
-        return;
-    }
-
-    free();
-    this->ptr = ptr;
-}
-
-template<typename T>
-T* UniquePointer<T>::release() {
-    T* temp = ptr;
-    ptr = nullptr;
-    return temp;
-}
 template<typename T>
 UniquePointer<T>::~UniquePointer() {
     free();
