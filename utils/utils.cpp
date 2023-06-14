@@ -129,6 +129,14 @@ void removeWhiteSpaces(char* str) {
     removeSurroundingChars(str, ' ');
 }
 
+void trimAllWhiteSpaces(char* str) {
+    for (char* s2 = str; *s2; ++s2) {
+        if (*s2 != ' ')
+            *str++ = *s2;
+    }
+    *str = 0;
+}
+
 void parseEscapeSequences(char* str) {
     char* readPtr = str;
     char* writePtr = str;
@@ -150,4 +158,43 @@ void parseEscapeSequences(char* str) {
     }
 
     *writePtr = '\0';
+}
+
+bool isNumber(const char* str) {
+    if (str == nullptr) {
+        return false;
+    }
+
+    while (*str == ' ') {
+        ++str;
+    }
+
+    if (*str == '+' || *str == '-') {
+        ++str;
+    }
+
+    bool isNumber = false;
+
+    while (isDigit(*str)) {
+        ++str;
+        isNumber = true;
+    }
+
+    if (*str == '.') {
+        ++str;
+    }
+
+    while (isDigit(*str)) {
+        ++str;
+        if (*str == '.') {
+            isNumber = false;
+            break;
+        }
+    }
+
+    while (*str == ' ') {
+        ++str;
+    }
+
+    return isNumber;
 }

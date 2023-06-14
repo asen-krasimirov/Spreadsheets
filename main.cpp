@@ -2,6 +2,8 @@
 
 #include "Spreadsheet/Spreadsheet.h"
 
+#include "utils/utils.h"
+
 int main() {
 //    CommandMenu commandMenu;
 

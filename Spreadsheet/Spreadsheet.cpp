@@ -7,6 +7,7 @@
 #include "../IntCell/IntCell.h"
 #include "../DoubleCell/DoubleCell.h"
 #include "../BlankCell/BlankCell.h"
+#include "../FormulaCell/FormulaCell.h"
 
 namespace {
     const short MAX_BUFFER_SIZE = 1024;
@@ -72,19 +73,24 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
         ss.getline(value, MAX_BUFFER_SIZE, delimiter);
         removeWhiteSpaces(value);
 
-        if (value[0] == '\0') {
-            newRow._cells.pushBack(new BlankCell());
-        }
-        else if (value[0] == '"') {
+        if (value[0] == '"') {
             parseEscapeSequences(value);
             removeSurroundingChars(value, '"', 1);
             newRow._cells.pushBack(new StringCell(value));
         }
-        else if (getCharCountInArray(value, '.') == 1) {
-            newRow._cells.pushBack(new DoubleCell(value));
+        else if (isNumber(value)){
+            if (getCharCountInArray(value, '.') == 1) {
+                 newRow._cells.pushBack(new DoubleCell(value));
+            }
+            else {
+                newRow._cells.pushBack(new IntCell(value));
+            }
+        }
+        else if (value[0] == '=') {
+            newRow._cells.pushBack(new FormulaCell(value));
         }
         else {
-            newRow._cells.pushBack(new IntCell(value));
+            newRow._cells.pushBack(new BlankCell());
         }
 
         curCellCount++;
