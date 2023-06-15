@@ -34,12 +34,15 @@ public:
     MyString& operator=(MyString&& other) noexcept;
 
     MyString& operator+=(const MyString& other);
+    MyString& operator+=(char ch);
 
     const char* c_str() const;
     size_t length() const;
 
     char& operator[](size_t index);
     char operator[](size_t index) const;
+
+    MyString substr(size_t begin, size_t howMany) const;
 
     ~MyString();
 

@@ -10,6 +10,7 @@ add_executable(Spreadsheets
         structs/UniquePointer.hpp
 
         MyString/MyString.h MyString/MyString.cpp
+        StringView/StringView.h StringView/StringView.cpp
 
         Spreadsheet/Spreadsheet.h Spreadsheet/Spreadsheet.cpp
 

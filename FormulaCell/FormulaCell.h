@@ -3,6 +3,7 @@
 #include "../Cell/Cell.h"
 #include "../structs/Vector.hpp"
 #include "../MyString/MyString.h"
+#include "../StringView/StringView.h"
 
 class FormulaCell : public Cell {
 private:
@@ -13,6 +14,8 @@ private:
 
 //    void setValue(double value);
 //    void setLength(unsigned length);
+
+    void parseOperation(MyString &value, char operatorSymbol = '+');
 
 public:
     explicit FormulaCell(const char *value);

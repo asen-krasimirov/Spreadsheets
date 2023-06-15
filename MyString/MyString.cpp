@@ -151,7 +151,6 @@ MyString& MyString::operator+=(const MyString& other)
     return *this;
 }
 
-
 char& MyString::operator[](size_t index)
 {
     return isSso() ? ssoData[index] : _data[index];
@@ -164,6 +163,19 @@ char MyString::operator[](size_t index) const
 std::ostream& operator<<(std::ostream& os, const MyString& obj)
 {
     return os << obj.c_str();
+}
+
+MyString MyString::substr(size_t begin, size_t howMany) const
+{
+    if (begin + howMany > length())
+        throw std::length_error("Error, Substr out of range");
+
+
+    MyString res(howMany + 1);
+    for (int i = 0; i < howMany; i++)
+        res._data[i] = _data[begin + i];
+    res[howMany] = '\0';
+    return res;
 }
 
 MyString operator+(const MyString& lhs, const MyString& rhs)
