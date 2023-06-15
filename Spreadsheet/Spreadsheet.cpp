@@ -87,6 +87,7 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
             }
         }
         else if (value[0] == '=') {
+            removeSurroundingChars(value, '=');
             newRow._cells.pushBack(new FormulaCell(value));
         }
         else {

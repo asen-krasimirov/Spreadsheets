@@ -34,7 +34,6 @@ public:
     MyString& operator=(MyString&& other) noexcept;
 
     MyString& operator+=(const MyString& other);
-    MyString& operator+=(char ch);
 
     const char* c_str() const;
     size_t length() const;

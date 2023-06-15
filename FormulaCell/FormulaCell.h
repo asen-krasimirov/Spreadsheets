@@ -9,7 +9,7 @@ class FormulaCell : public Cell {
 private:
 
 //    Vector<char> _operators;
-    MyString _operators;
+    Vector<char> _operators;
     Vector<MyString> _operands;
 
 //    void setValue(double value);
