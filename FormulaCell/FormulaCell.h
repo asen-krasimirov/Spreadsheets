@@ -15,7 +15,7 @@ private:
 //    void setValue(double value);
 //    void setLength(unsigned length);
 
-    void parseOperation(MyString &value, char operatorSymbol = '+');
+    void parseOperation(MyString &value, const char *operatorSymbol);
 
 public:
     explicit FormulaCell(const char *value);
