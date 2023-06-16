@@ -8,7 +8,7 @@ namespace {
     }
 }
 
-void FormulaCell::parseOperation(MyString &value, const char *operators) {
+void FormulaCell::extractOperation(MyString &value, const char *operators) {
     for (size_t i = 0; i < value.length(); ++i) {
         if (isCharInArray(operators, value[i])) {
             int leftIndex = i - 1;
@@ -48,9 +48,9 @@ FormulaCell::FormulaCell(const char *value) {
     trimAllWhiteSpaces(tempValue);
 
     MyString operationalValue(tempValue);
-    parseOperation(operationalValue, "^");
-    parseOperation(operationalValue, "/*");
-    parseOperation(operationalValue, "-+");
+    extractOperation(operationalValue, "^");
+    extractOperation(operationalValue, "/*");
+    extractOperation(operationalValue, "-+");
 }
 
 unsigned FormulaCell::getWidth() const {
