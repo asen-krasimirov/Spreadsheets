@@ -4,6 +4,8 @@
 
 #include "utils/utils.h"
 
+#include "StringCell/StringCell.h"
+
 int main() {
 //    CommandMenu commandMenu;
 

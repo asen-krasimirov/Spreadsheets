@@ -20,8 +20,12 @@ public:
 
     T* operator->();
     const T* operator->() const;
+
     T& operator*();
     const T& operator*() const;
+
+    T* operator&();
+    const T* operator&() const;
 
 private:
     void move(UniquePointer<T>&& other) noexcept;

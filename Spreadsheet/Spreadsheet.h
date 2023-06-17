@@ -1,13 +1,16 @@
 #pragma once
 
 #include "../structs/Vector.hpp"
-#include "../structs/UniquePointer.hpp"
+//#include "../structs/UniquePointer.hpp"
 #include "../Row/Row.h"
+#include "../FormulaCell/FormulaCell.h"
 
 class Spreadsheet {
 private:
     Vector<Row> _rows;
     Vector<size_t> _cellWhiteSpaces;
+    Vector<SharedPointer<Cell>> _formulaCells;
+
     size_t _biggestCellCount = 0;
 
 public:
@@ -16,6 +19,8 @@ public:
     void print() const;
 
     void loadFile(const char *fileName);
+
+    Cell *getCellByIndex(size_t rowIndex, size_t cellIndex);
 
 private:
     void readRow(const char *buffer, char delimiter);

@@ -2,6 +2,20 @@
 #include "FormulaCell.h"
 #include "../utils/utils.h"
 
+#include "../structs/SharedPointer.hpp"
+
+#include "../Cell/Cell.h"
+#include "../IntCell/IntCell.h"
+#include "../DoubleCell/DoubleCell.h"
+
+#include "../Spreadsheet/Spreadsheet.h"
+
+//template<typename T>
+//class SharedPointer;
+//class Cell;
+//class DoubleCell;
+//class IntCell;
+
 namespace {
     bool isOperator(char ch) {
         return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^';
@@ -42,7 +56,7 @@ void FormulaCell::extractOperation(MyString &value, const char *operators) {
     }
 }
 
-FormulaCell::FormulaCell(const char *value) {
+FormulaCell::FormulaCell(const char *value, Spreadsheet *spreadsheet) : _spreadsheet(spreadsheet) {
     char *tempValue = new char[strlen(value) + 1];
     strcpy(tempValue, value);
     trimAllWhiteSpaces(tempValue);
@@ -58,5 +72,61 @@ unsigned FormulaCell::getWidth() const {
 }
 
 void FormulaCell::printCell(std::ostream &out) const {
+//    if (!isParsed) {
+//        parseCells();
+//    }
+
     out << "= TEST";
+}
+
+bool FormulaCell::isReferenceValid(const char *value) {
+    if (strlen(value) != 4) {
+        return false;
+    }
+
+    if (value[0] != 'R' || value[2] != 'C') {
+        return false;
+    }
+
+    if (!isDigit(value[1]) || !isDigit(value[3])) {
+        return false;
+    }
+
+    return true;
+};
+
+Cell *FormulaCell::parseOperand(const MyString &value) {
+    if (isNumber(value.c_str())) {
+        if (getCharCountInArray(value.c_str(), '.') == 1) {
+            return new DoubleCell(value.c_str());
+        }
+        else {
+            return new IntCell(value.c_str());
+        }
+    }
+    else if (value[0] == 'R') {
+        if (isReferenceValid(value.c_str())) {
+            return _spreadsheet->getCellByIndex(value[1] - '0', value[3] - '0');
+        }
+    }
+
+    throw std::invalid_argument("Invalid type!");
+}
+
+
+void FormulaCell::parseCell() {
+    Vector<SharedPointer<Cell>> parsedCells;
+
+    for (int i = 0, operandIndex = 0; i < _operators.getSize(); ++i, operandIndex += 2) {
+        if (_operators[i] == 'b') {
+
+        }
+
+        Cell *firstOperand = parseOperand(_operands[operandIndex]);
+        Cell *secondOperand = parseOperand(_operands[operandIndex + 1]);
+
+//        if ()
+    }
+
+//    this->parsedResult = ...
 }

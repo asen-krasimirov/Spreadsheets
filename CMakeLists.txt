@@ -8,6 +8,7 @@ add_executable(Spreadsheets
         utils/utils.h utils/utils.cpp
         structs/Vector.hpp
         structs/UniquePointer.hpp
+        structs/SharedPointer.hpp
 
         MyString/MyString.h MyString/MyString.cpp
         StringView/StringView.h StringView/StringView.cpp
@@ -16,7 +17,7 @@ add_executable(Spreadsheets
 
         Row/Row.h
 
-        Cell/Cell.h Cell/Cell.cpp
+        Cell/Cell.h
         BlankCell/BlankCell.h BlankCell/BlankCell.cpp
         StringCell/StringCell.h StringCell/StringCell.cpp
         IntCell/IntCell.h IntCell/IntCell.cpp

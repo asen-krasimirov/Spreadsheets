@@ -33,6 +33,7 @@ Spreadsheet::Spreadsheet(const char *fileName) {
 }
 
 void Spreadsheet::loadFile(const char *fileName) {
+    // TODO: Delete old data before reading new
     std::ifstream in(fileName);
 
     if (!in.is_open()) {
@@ -56,6 +57,12 @@ void Spreadsheet::loadFile(const char *fileName) {
 
         fillRow(curRow, _biggestCellCount - curRow._cells.getSize());
         saveCellWhiteSpaces(curRow);
+    }
+
+    for (int i = 0; i < _formulaCells.getSize(); ++i) {
+//        _formulaCells[i]->parseCell();
+        dynamic_cast<FormulaCell*>(_formulaCells[i].operator->())->parseCell(); // TODO: make prettier
+
     }
 
     in.close();
@@ -88,7 +95,10 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
         }
         else if (value[0] == '=') {
             removeSurroundingChars(value, '=');
-            newRow._cells.pushBack(new FormulaCell(value));
+
+            SharedPointer<Cell> formulaCell = new FormulaCell(value, this);
+            newRow._cells.pushBack(formulaCell);
+            _formulaCells.pushBack(formulaCell);
         }
         else {
             newRow._cells.pushBack(new BlankCell());
@@ -131,4 +141,13 @@ void Spreadsheet::printWhiteSpaces(const Row &curRow, int rowIndex) const {
     }
 }
 
+Cell *Spreadsheet::getCellByIndex(size_t rowIndex, size_t cellIndex) {
+    if (rowIndex >= _rows.getSize()) {
+        return new BlankCell();
+    }
+    if (cellIndex >= _rows[cellIndex]._cells.getSize()) {
+        return new BlankCell();
+    }
 
+    return _rows[rowIndex]._cells[cellIndex].operator->();
+}
