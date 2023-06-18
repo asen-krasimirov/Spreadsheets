@@ -1,6 +1,10 @@
 #include "DoubleCell.h"
 #include "../utils/utils.h"
 
+namespace {
+    const short DOUBLE_PRESSISION_CAP = 4;
+}
+
 void DoubleCell::setValue(double value) {
     _value = value;
 }
@@ -10,13 +14,13 @@ void DoubleCell::setLength(unsigned length) {
 }
 
 DoubleCell::DoubleCell(const char *value) {
-    setValue(parseDouble(value));
+    setValue(roundNumber(parseDouble(value), DOUBLE_PRESSISION_CAP));
     setLength(getNumLen(_value));
 }
 
 DoubleCell::DoubleCell(double value) {
-    setValue(value);
-    setLength(getNumLen(value));
+    setValue(roundNumber(value, DOUBLE_PRESSISION_CAP));
+    setLength(getNumLen(_value));
 }
 
 Cell *DoubleCell::clone() {

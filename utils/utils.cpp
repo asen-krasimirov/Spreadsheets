@@ -1,6 +1,7 @@
 #include <cstring>
 
 #include "utils.h"
+#include <cmath>
 
 unsigned getNumLen(int num) {
     unsigned ctr = 0;
@@ -247,4 +248,9 @@ void intToCharArray(int number, char* charArray, int arraySize) {
     }
 
     charArray[arraySize] = '\0';
+}
+
+double roundNumber(double number, int decimalPlaces) {
+    double multiplier = powerNumber(10.0, decimalPlaces);
+    return round(number * multiplier) / multiplier;
 }

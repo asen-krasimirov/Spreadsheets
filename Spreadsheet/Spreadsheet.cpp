@@ -1,3 +1,4 @@
+//#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <cstring>
@@ -159,6 +160,8 @@ void Spreadsheet::print(std::ostream &out) const {
 
             printRow(out, curRow);
 
+//            out << std::fixed << std::setprecision(4);   // Double padding fix
+
             out << std::endl;
         }
     }
@@ -222,4 +225,6 @@ void Spreadsheet::edit(size_t rowIndex, size_t cellIndex, const char *newValue) 
     } else {
         throw std::invalid_argument("Unknown type entered!");
     }
+
+    saveCellWhiteSpaces(_rows[rowIndex]);
 }

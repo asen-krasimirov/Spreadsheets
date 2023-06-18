@@ -5,12 +5,15 @@
 #include "../MyString/MyString.h"
 #include "../structs/SharedPointer.hpp"
 
+//#include "../Spreadsheet/Spreadsheet.h"
+
 class Spreadsheet;
 
 class FormulaCell : public Cell {
 private:
 
     Spreadsheet *_spreadsheet;  // TODO: handle memory leak (not with sharedPtr)
+//    SharedPointer<Spreadsheet> _spreadsheet;
 
     Vector<char> _operators;
     Vector<MyString> _operands;
