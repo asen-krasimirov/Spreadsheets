@@ -3,7 +3,6 @@
 #include "../Cell/Cell.h"
 #include "../structs/Vector.hpp"
 #include "../MyString/MyString.h"
-#include "../StringView/StringView.h"
 #include "../structs/SharedPointer.hpp"
 
 class Spreadsheet;
@@ -11,7 +10,7 @@ class Spreadsheet;
 class FormulaCell : public Cell {
 private:
 
-    Spreadsheet *_spreadsheet;  // handle memory leak (not with sharedPtr)
+    Spreadsheet *_spreadsheet;  // TODO: handle memory leak (not with sharedPtr)
 
     Vector<char> _operators;
     Vector<MyString> _operands;

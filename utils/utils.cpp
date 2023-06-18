@@ -2,23 +2,6 @@
 
 #include "utils.h"
 
-int getAbs(int num) {
-    return num >= 0 ? num : num * -1;
-}
-
-double getAbs(double num) {
-    return num >= 0 ? num : num * -1;
-}
-
-int getFloor(double number) {
-    int integerPart = (int)number;
-
-    if (number >= 0 || number == integerPart)
-        return integerPart;
-    else
-        return integerPart - 1;
-}
-
 unsigned getNumLen(int num) {
     unsigned ctr = 0;
     while (num > 0) {

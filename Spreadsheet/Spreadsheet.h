@@ -26,7 +26,7 @@ public:
     void save() const;
     void saveToFile(const char *fileName) const;
 
-    Cell *getCellByIndex(size_t rowIndex, size_t cellIndex);
+    const Cell *getCellByIndex(size_t rowIndex, size_t cellIndex) const;
 
 private:
     void readRow(int rowIndex, const char *buffer, char delimiter);

@@ -3,17 +3,10 @@
 
 #include "CommandMenu.h"
 
-#include "../MyString/MyString.h"
-
 #include "../utils/utils.h"
 
 namespace {
-    const short MAX_FILE_NAME_SIZE = 1024;
-    const short MAX_COMMAND_LINE_SIZE = 1024;
-}
-
-CommandMenu::CommandMenu() {
-
+    const short MAX_COMMAND_LINE_SIZE = 10240;
 }
 
 void CommandMenu::printCommands() {
@@ -71,7 +64,6 @@ void CommandMenu::run() {
                     commandString.getline(mode, MAX_COMMAND_LINE_SIZE, ' ');
 
                     try {
-
                         if (strcmp(mode, "as") == 0) {
                             char newFileName[MAX_COMMAND_LINE_SIZE];
                             commandString.getline(newFileName, MAX_COMMAND_LINE_SIZE, ' ');

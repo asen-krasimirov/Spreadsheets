@@ -11,7 +11,7 @@
 #include "../FormulaCell/FormulaCell.h"
 
 namespace {
-    const short MAX_BUFFER_SIZE = 1024;
+    const short MAX_BUFFER_SIZE = 10240;
 }
 
 void Spreadsheet::fillRow(Row &row, size_t blankCellsToAdd) {
@@ -109,7 +109,6 @@ void Spreadsheet::readRow(int rowIndex, const char *buffer, char delimiter = ','
     size_t curCellCount = 0;
 
     while (!ss.eof()) {
-        // TODO: validate cell format before casting and stop program upon exception
         ss.getline(value, MAX_BUFFER_SIZE, delimiter);
         removeWhiteSpaces(value);
 
@@ -183,7 +182,7 @@ void Spreadsheet::printWhiteSpaces(std::ostream &out, const Row &curRow, int row
     }
 }
 
-Cell *Spreadsheet::getCellByIndex(size_t rowIndex, size_t cellIndex) {
+const Cell *Spreadsheet::getCellByIndex(size_t rowIndex, size_t cellIndex) const {
     if (rowIndex >= _rows.getSize()) {
         return new BlankCell();
     }

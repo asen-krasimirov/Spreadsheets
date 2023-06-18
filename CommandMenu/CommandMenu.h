@@ -11,7 +11,6 @@ private:
     static void getInputLine(MyString &inputLine, const char *message);
 
 public:
-    CommandMenu();
 
     void run();
 

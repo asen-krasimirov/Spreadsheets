@@ -2,8 +2,6 @@
 #include "FormulaCell.h"
 #include "../utils/utils.h"
 
-#include "../structs/SharedPointer.hpp"
-
 #include "../Cell/Cell.h"
 #include "../IntCell/IntCell.h"
 #include "../DoubleCell/DoubleCell.h"
@@ -174,7 +172,6 @@ void FormulaCell::parseCell() {
     }
     catch (std::invalid_argument &exc) {
         _formulaResult = new StringCell("ERROR");
-//        throw exc;
     }
 }
 

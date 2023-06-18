@@ -1,4 +1,4 @@
-// MyString from Angel Dimitriev's repo
+// Modified MyString from Angel Dimitriev's repo
 #include "MyString.h"
 #include <cstring>
 #include "../utils/utils.h"

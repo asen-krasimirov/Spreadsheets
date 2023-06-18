@@ -1,9 +1,5 @@
 #pragma once
 
-int getAbs(int num);
-
-double getAbs(double num);
-
 unsigned getNumLen(int num);
 
 unsigned getNumLen(double num);

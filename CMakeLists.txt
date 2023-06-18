@@ -7,11 +7,9 @@ add_executable(Spreadsheets
         main.cpp
         utils/utils.h utils/utils.cpp
         structs/Vector.hpp
-        structs/UniquePointer.hpp
         structs/SharedPointer.hpp
 
         MyString/MyString.h MyString/MyString.cpp
-        StringView/StringView.h StringView/StringView.cpp
 
         Spreadsheet/Spreadsheet.h Spreadsheet/Spreadsheet.cpp
 
