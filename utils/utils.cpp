@@ -42,17 +42,18 @@ unsigned getNumLen(double num) {
     }
 
     double decimalPart = num - static_cast<double>(intPart);
+    int decimalLength = 0;
 
     if (decimalPart != 0) {
         length++;
 
-        while (decimalPart - static_cast<long long>(decimalPart) > 0.001) {
+        while (decimalPart - static_cast<long long>(decimalPart) > 0.001 && decimalLength < 4) {
             decimalPart *= 10;
-            length++;
+            decimalLength++;
         }
     }
 
-    return length;
+    return length + decimalLength;
 }
 
 unsigned getCharCountInArray(const char *arr, char ch) {

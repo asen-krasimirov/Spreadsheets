@@ -21,6 +21,7 @@ namespace {
     bool isOperator(char ch) {
         return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^';
     }
+    const size_t REFERENCE_NUM_LIMIT = 10000;
 }
 
 void FormulaCell::extractOperation(MyString &value, const char *operators) {
@@ -106,11 +107,32 @@ void FormulaCell::parseOperandResult(const MyString &value, double &result) {
             result = parseInt(value.c_str());
         }
         return;
-    } else if (value[0] == 'R') {
-        // TODO !!!: COULD BE WITH MORE THEN 4 LETTERS- R20C1
-        if (isReferenceValid(value.c_str())) {
-//            return _spreadsheet->getCellByIndex(value[1] - '0' - 1, value[3] - '0' - 1);
-            result = _spreadsheet->getCellByIndex(value[1] - '0' - 1, value[3] - '0' - 1)->getOperationValue();
+    } else if (value[0] == 'R' && getCharCountInArray(value.c_str(), 'C') == 1) {
+        bool isValid = true;
+        int rowIndexLen = 0;
+        for (int i = 1; value[i] != 'C' && i < value.length() && value[i] != '\0'; ++i, ++rowIndexLen) {
+            if (!isDigit(value[i])) {
+                isValid= false;
+                break;
+            }
+        }
+
+        int columnIndexStart = rowIndexLen + 2;
+        int columnIndexLen = 0;
+
+        if (isValid) {
+            for (int i = columnIndexStart; i < value.length() && value[i] != '\0'; ++i, ++columnIndexLen) {
+                if (!isDigit(value[i])) {
+                    isValid= false;
+                    break;
+                }
+            }
+        }
+
+        if (isValid) {
+            size_t rowIndex = parseInt(value.substr(1, rowIndexLen).c_str());
+            size_t columnIndex = parseInt(value.substr(columnIndexStart, columnIndexLen).c_str());
+            result = _spreadsheet->getCellByIndex(rowIndex - 1, columnIndex - 1)->getOperationValue();
             return;
         }
     }
@@ -123,22 +145,28 @@ void FormulaCell::parseOperandResult(const Cell *value, double &result) {
 }
 
 void FormulaCell::parseCell() {
-    Vector<SharedPointer<Cell>> parsedCells;
+    Vector<double> operationResults;
 
     try {
-
         for (int i = 0, operandIndex = 0; i < _operators.getSize(); ++i) {
             double valueOne = 0;
             double valueTwo = 0;
-
             char curOperator = _operators[i];
 
             if (curOperator == 'b') {
-                parseOperandResult(parsedCells.popBack().get(), valueOne);
-                parseOperandResult(_operands[operandIndex], valueTwo);
-
                 curOperator = _operators[i + 1];
-                operandIndex += 1;
+                i++;
+
+                if (operandIndex < _operands.getSize()) {
+                    valueOne = operationResults.popBack();
+                    parseOperandResult(_operands[operandIndex], valueTwo);
+                    operandIndex += 1;
+                }
+                else {
+                    // edge case: when there is no more operands left to get
+                    valueTwo = operationResults.popBack();
+                    valueOne = operationResults.popBack();
+                }
             }
             else {
                 parseOperandResult(_operands[operandIndex], valueOne);
@@ -163,22 +191,23 @@ void FormulaCell::parseCell() {
                 default: break;
             }
 
-            if (result == 0) {
-                parsedCells.pushBack(new BlankCell());
-            } else if (result - (int)result < 0.000001) {
-                parsedCells.pushBack(new IntCell((int) result));
-            }
-            else {
-                parsedCells.pushBack(new DoubleCell(result));
-            }
-
+            operationResults.pushBack(result);
         }
 
-        _formulaResult = parsedCells.popBack();
+        double finalResult = operationResults.popBack();
+
+        if (finalResult == 0) {
+            _formulaResult = new BlankCell();
+        } else if (finalResult - (int)finalResult < 0.000001) {
+            _formulaResult = new IntCell((int) finalResult);
+        }
+        else {
+            _formulaResult = new DoubleCell(finalResult);
+        }
     }
     catch (std::invalid_argument &exc) {
         _formulaResult = new StringCell("ERROR");
-        throw exc;
+//        throw exc;
     }
 }
 

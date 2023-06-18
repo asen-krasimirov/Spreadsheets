@@ -15,7 +15,7 @@ void DoubleCell::setLength(unsigned length) {
 
 DoubleCell::DoubleCell(const char *value) {
     setValue(parseDouble(value));
-    setLength(std::strlen(value));
+    setLength(getNumLen(_value));
 }
 
 DoubleCell::DoubleCell(double value) {
