@@ -1,15 +1,10 @@
-//#include <iomanip>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <cstring>
 #include "Spreadsheet.h"
 
 #include "../utils/utils.h"
-#include "../StringCell/StringCell.h"
-#include "../IntCell/IntCell.h"
-#include "../DoubleCell/DoubleCell.h"
-#include "../BlankCell/BlankCell.h"
-#include "../FormulaCell/FormulaCell.h"
 
 namespace {
     const short MAX_BUFFER_SIZE = 10240;
@@ -160,7 +155,7 @@ void Spreadsheet::print(std::ostream &out) const {
 
             printRow(out, curRow);
 
-//            out << std::fixed << std::setprecision(4);   // Double padding fix
+            out << std::fixed << std::setprecision(4);   // Double padding fix
 
             out << std::endl;
         }
@@ -184,7 +179,7 @@ void Spreadsheet::printWhiteSpaces(std::ostream &out, const Row &curRow, int row
     }
 }
 
-const Cell *Spreadsheet::getCellByIndex(size_t rowIndex, size_t cellIndex) const {
+const Spreadsheet::Cell *Spreadsheet::getCellByIndex(size_t rowIndex, size_t cellIndex) const {
     if (rowIndex >= _rows.getSize()) {
         return new BlankCell();
     }
@@ -227,4 +222,296 @@ void Spreadsheet::edit(size_t rowIndex, size_t cellIndex, const char *newValue) 
     }
 
     saveCellWhiteSpaces(_rows[rowIndex]);
+}
+
+// IntCell functions implementation
+void Spreadsheet::Spreadsheet::IntCell::setValue(int value) {
+    _value = value;
+}
+
+void Spreadsheet::IntCell::setLength(unsigned length) {
+    _length = length;
+}
+
+Spreadsheet::IntCell::IntCell(const char *value) {
+    setValue(parseInt(value));
+    setLength(getNumLen(_value));
+}
+
+Spreadsheet::IntCell::IntCell(int value) {
+    setValue(value);
+    setLength(getNumLen(value));
+}
+
+Spreadsheet::Cell *Spreadsheet::IntCell::clone() {
+    return new Spreadsheet::IntCell(*this);
+}
+
+unsigned Spreadsheet::IntCell::getWidth() const {
+    return _length;
+}
+
+void Spreadsheet::IntCell::printCell(std::ostream &out) const {
+    out << _value;
+}
+
+double Spreadsheet::IntCell::getOperationValue() const {
+    return _value;
+}
+
+// DoubleCell functions implementation
+namespace {
+    const short DOUBLE_PRECISION_CAP = 4;
+}
+
+void Spreadsheet::DoubleCell::setValue(double value) {
+    _value = value;
+}
+
+void Spreadsheet::DoubleCell::setLength(unsigned length) {
+    _length = length;
+}
+
+Spreadsheet::DoubleCell::DoubleCell(const char *value) {
+    setValue(roundNumber(parseDouble(value), DOUBLE_PRECISION_CAP));
+    setLength(getNumLen(_value));
+}
+
+Spreadsheet::DoubleCell::DoubleCell(double value) {
+    setValue(roundNumber(value, DOUBLE_PRECISION_CAP));
+    setLength(getNumLen(_value));
+}
+
+Spreadsheet::Cell *Spreadsheet::DoubleCell::clone() {
+    return new DoubleCell(*this);
+}
+
+unsigned Spreadsheet::DoubleCell::getWidth() const {
+    return _length;
+}
+
+void Spreadsheet::DoubleCell::printCell(std::ostream &out) const {
+    out << _value;
+}
+
+double Spreadsheet::DoubleCell::getOperationValue() const {
+    return _value;
+}
+
+// StringCell functions implementation
+Spreadsheet::StringCell::StringCell(const char *value) {
+    _value = value;
+}
+
+Spreadsheet::Cell *Spreadsheet::StringCell::clone() {
+    return new StringCell(*this);
+}
+
+unsigned Spreadsheet::StringCell::getWidth() const {
+    return _value.length();
+}
+
+void Spreadsheet::StringCell::printCell(std::ostream &out) const {
+    out << _value;
+}
+
+double Spreadsheet::StringCell::getOperationValue() const {
+    if (isNumber(_value.c_str())) {
+        if (getCharCountInArray(_value.c_str(), '.') == 1) {
+            return parseDouble(_value.c_str());
+        }
+        else {
+            return parseInt(_value.c_str());
+        }
+    }
+
+    return 0;
+}
+
+// BlankCell functions implementation
+Spreadsheet::BlankCell::BlankCell() : StringCell("") {
+
+}
+
+Spreadsheet::Cell *Spreadsheet::BlankCell::clone() {
+    return new BlankCell(*this);
+}
+
+double Spreadsheet::BlankCell::getOperationValue() const {
+    return 0;
+}
+
+// FormulaCell functions implementation
+namespace {
+    bool isOperator(char ch) {
+        return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^';
+    }
+}
+
+void Spreadsheet::FormulaCell::extractOperation(MyString &value, const char *operators) {
+    for (size_t i = 0; i < value.length(); ++i) {
+        if (isCharInArray(operators, value[i])) {
+            int leftIndex = i - 1;
+            while (leftIndex >= 0 && value[leftIndex] != ' ' && !isOperator(value[leftIndex])) {
+                leftIndex--;
+            }
+
+            if (leftIndex != i - 1) {
+                _operands.pushBack(value.substr(leftIndex + 1, i - leftIndex - 1));
+            }
+
+            int rightIndex = i + 1;
+            while (rightIndex < value.length() && value[rightIndex] != ' ' && !isOperator(value[rightIndex])) {
+                rightIndex++;
+            }
+
+            if (rightIndex != i + 1) {
+                _operands.pushBack(value.substr(i + 1, rightIndex - i - 1));
+            }
+
+            if (value[leftIndex] == ' ' || value[rightIndex] == ' ') {
+                _operators.pushBack('b');
+            }
+
+            _operators.pushBack(value[i]);
+
+            for (size_t y = leftIndex + 1; y < rightIndex; ++y) {
+                value[y] = ' ';
+            }
+        }
+    }
+}
+
+Spreadsheet::FormulaCell::FormulaCell(const char *value, Spreadsheet *spreadsheet) : _spreadsheet(spreadsheet) {
+    char *tempValue = new char[strlen(value) + 1];
+    strcpy(tempValue, value);
+    trimAllWhiteSpaces(tempValue);
+
+    MyString operationalValue(tempValue);
+    extractOperation(operationalValue, "^");
+    extractOperation(operationalValue, "/*");
+    extractOperation(operationalValue, "-+");
+}
+
+Spreadsheet::Cell *Spreadsheet::FormulaCell::clone() {
+    return new FormulaCell(*this);
+}
+
+unsigned Spreadsheet::FormulaCell::getWidth() const {
+    return _formulaResult->getWidth();
+}
+
+void Spreadsheet::FormulaCell::printCell(std::ostream &out) const {
+    _formulaResult->printCell(out);
+}
+
+void Spreadsheet::FormulaCell::parseOperandResult(const MyString &value, double &result) {
+    if (isNumber(value.c_str())) {
+        if (getCharCountInArray(value.c_str(), '.') == 1) {
+            result = parseDouble(value.c_str());
+        } else {
+            result = parseInt(value.c_str());
+        }
+        return;
+    } else if (value[0] == 'R' && getCharCountInArray(value.c_str(), 'C') == 1) {
+        bool isValid = true;
+        int rowIndexLen = 0;
+        for (int i = 1; value[i] != 'C' && i < value.length() && value[i] != '\0'; ++i, ++rowIndexLen) {
+            if (!isDigit(value[i])) {
+                isValid= false;
+                break;
+            }
+        }
+
+        int columnIndexStart = rowIndexLen + 2;
+        int columnIndexLen = 0;
+
+        if (isValid) {
+            for (int i = columnIndexStart; i < value.length() && value[i] != '\0'; ++i, ++columnIndexLen) {
+                if (!isDigit(value[i])) {
+                    isValid= false;
+                    break;
+                }
+            }
+        }
+
+        if (isValid) {
+            size_t rowIndex = parseInt(value.substr(1, rowIndexLen).c_str());
+            size_t columnIndex = parseInt(value.substr(columnIndexStart, columnIndexLen).c_str());
+            result = _spreadsheet->getCellByIndex(rowIndex - 1, columnIndex - 1)->getOperationValue();
+            return;
+        }
+    }
+
+    throw std::invalid_argument("Invalid type!");
+}
+
+void Spreadsheet::FormulaCell::parseCell() {
+    Vector<double> operationResults;
+
+    try {
+        for (int i = 0, operandIndex = 0; i < _operators.getSize(); ++i) {
+            double valueOne = 0;
+            double valueTwo = 0;
+            char curOperator = _operators[i];
+
+            if (curOperator == 'b') {
+                curOperator = _operators[i + 1];
+                i++;
+
+                if (operandIndex < _operands.getSize()) {
+                    valueOne = operationResults.popBack();
+                    parseOperandResult(_operands[operandIndex], valueTwo);
+                    operandIndex += 1;
+                }
+                else {
+                    // edge case: when there is no more operands left to get
+                    valueTwo = operationResults.popBack();
+                    valueOne = operationResults.popBack();
+                }
+            }
+            else {
+                parseOperandResult(_operands[operandIndex], valueOne);
+                parseOperandResult(_operands[operandIndex + 1], valueTwo);
+
+                operandIndex += 2;
+            }
+
+            double result = 0;
+            switch (curOperator) {
+                case '^': result = powerNumber(valueOne, valueTwo); break;
+                case '*': result = valueOne * valueTwo; break;
+                case '/': {
+                    if (valueTwo == 0) {
+                        throw std::invalid_argument("Division by zero!");
+                    }
+                    result = valueOne / valueTwo;
+                    break;
+                }
+                case '+': result = valueOne + valueTwo; break;
+                case '-': result = valueOne - valueTwo; break;
+                default: break;
+            }
+
+            operationResults.pushBack(result);
+        }
+
+        double finalResult = operationResults.popBack();
+
+        if (finalResult == 0) {
+            _formulaResult = new BlankCell();
+        } else if (finalResult - (int)finalResult < 0.000001) {
+            _formulaResult = new IntCell((int) finalResult);
+        }
+        else {
+            _formulaResult = new DoubleCell(finalResult);
+        }
+    }
+    catch (std::invalid_argument &exc) {
+        _formulaResult = new StringCell("ERROR");
+    }
+}
+
+double Spreadsheet::FormulaCell::getOperationValue() const {
+    return _formulaResult->getOperationValue();
 }

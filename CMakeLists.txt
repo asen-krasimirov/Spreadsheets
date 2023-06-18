@@ -13,14 +13,14 @@ add_executable(Spreadsheets
 
         Spreadsheet/Spreadsheet.h Spreadsheet/Spreadsheet.cpp
 
-        Row/Row.h
+#        Row/Row.h
 
-        Cell/Cell.h
-        BlankCell/BlankCell.h BlankCell/BlankCell.cpp
-        StringCell/StringCell.h StringCell/StringCell.cpp
-        IntCell/IntCell.h IntCell/IntCell.cpp
-        DoubleCell/DoubleCell.h DoubleCell/DoubleCell.cpp
-        FormulaCell/FormulaCell.h FormulaCell/FormulaCell.cpp
+#        Cell/Cell.h
+#        BlankCell/BlankCell.h BlankCell/BlankCell.cpp
+#        StringCell/StringCell.h StringCell/StringCell.cpp
+#        IntCell/IntCell.h IntCell/IntCell.cpp
+#        DoubleCell/DoubleCell.h DoubleCell/DoubleCell.cpp
+#        FormulaCell/FormulaCell.h FormulaCell/FormulaCell.cpp
 
         CommandMenu/CommandMenu.h CommandMenu/CommandMenu.cpp
         )
