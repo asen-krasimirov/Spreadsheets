@@ -49,7 +49,6 @@ void Spreadsheet::loadFile(const char *fileName) {
 
     char buffer[MAX_BUFFER_SIZE];
     int rowIndex = 1;
-    // TODO: validate table format (row format, cell format, ...)
     while (!in.eof()) {
         in.getline(buffer, MAX_BUFFER_SIZE);
         readRow(rowIndex++, buffer, ',');

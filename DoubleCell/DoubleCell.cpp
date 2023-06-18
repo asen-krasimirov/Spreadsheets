@@ -19,6 +19,10 @@ DoubleCell::DoubleCell(double value) {
     setLength(getNumLen(value));
 }
 
+Cell *DoubleCell::clone() {
+    return new DoubleCell(*this);
+}
+
 unsigned DoubleCell::getWidth() const {
     return _length;
 }

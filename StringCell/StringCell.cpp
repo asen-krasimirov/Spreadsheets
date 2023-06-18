@@ -5,6 +5,10 @@ StringCell::StringCell(const char *value) {
     _value = value;
 }
 
+Cell *StringCell::clone() {
+    return new StringCell(*this);
+}
+
 unsigned StringCell::getWidth() const {
     return _value.length();
 }

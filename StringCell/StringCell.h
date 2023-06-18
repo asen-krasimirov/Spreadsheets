@@ -9,6 +9,7 @@ private:
 
 public:
     explicit StringCell(const char *value);
+    Cell *clone() override;
 
     unsigned getWidth() const override;
     void printCell(std::ostream &out) const override;

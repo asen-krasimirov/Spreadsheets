@@ -19,6 +19,10 @@ IntCell::IntCell(int value) {
     setLength(getNumLen(value));
 }
 
+Cell *IntCell::clone() {
+    return new IntCell(*this);
+}
+
 unsigned IntCell::getWidth() const {
     return _length;
 }

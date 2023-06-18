@@ -23,6 +23,7 @@ private:
 
 public:
     explicit FormulaCell(const char *value, Spreadsheet *spreadsheet);
+    Cell *clone() override;
 
     void parseCell();
 

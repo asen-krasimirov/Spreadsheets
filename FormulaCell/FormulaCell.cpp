@@ -60,6 +60,10 @@ FormulaCell::FormulaCell(const char *value, Spreadsheet *spreadsheet) : _spreads
     extractOperation(operationalValue, "-+");
 }
 
+Cell *FormulaCell::clone() {
+    return new FormulaCell(*this);
+}
+
 unsigned FormulaCell::getWidth() const {
     return _formulaResult->getWidth();
 }
