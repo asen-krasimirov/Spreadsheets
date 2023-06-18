@@ -6,7 +6,7 @@ double getAbs(double num);
 
 unsigned getNumLen(int num);
 
-//unsigned getNumLen(double num);
+unsigned getNumLen(double num);
 
 unsigned getCharCountInArray(const char *arr, char ch);
 
@@ -27,3 +27,5 @@ void trimAllWhiteSpaces(char* str);
 void parseEscapeSequences(char* str);
 
 bool isNumber(const char* str);
+
+double powerNumber(double base, int exponent);

@@ -13,4 +13,6 @@ public:
     unsigned getWidth() const override;
     void printCell(std::ostream &out) const override;
 
+    double getOperationValue() const override;
+
 };

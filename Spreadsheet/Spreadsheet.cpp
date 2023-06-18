@@ -48,6 +48,10 @@ void Spreadsheet::loadFile(const char *fileName) {
         readRow(buffer, ',');
     }
 
+    for (int i = 0; i < _formulaCells.getSize(); ++i) {
+        dynamic_cast<FormulaCell*>(_formulaCells[i].get())->parseCell(); // TODO: make prettier
+    }
+
     for (int i = 0; i < _biggestCellCount; ++i) {
         _cellWhiteSpaces.pushBack(0);
     }
@@ -57,12 +61,6 @@ void Spreadsheet::loadFile(const char *fileName) {
 
         fillRow(curRow, _biggestCellCount - curRow._cells.getSize());
         saveCellWhiteSpaces(curRow);
-    }
-
-    for (int i = 0; i < _formulaCells.getSize(); ++i) {
-//        _formulaCells[i]->parseCell();
-        dynamic_cast<FormulaCell*>(_formulaCells[i].operator->())->parseCell(); // TODO: make prettier
-
     }
 
     in.close();
@@ -145,7 +143,7 @@ Cell *Spreadsheet::getCellByIndex(size_t rowIndex, size_t cellIndex) {
     if (rowIndex >= _rows.getSize()) {
         return new BlankCell();
     }
-    if (cellIndex >= _rows[cellIndex]._cells.getSize()) {
+    if (cellIndex >= _rows[rowIndex]._cells.getSize()) {
         return new BlankCell();
     }
 

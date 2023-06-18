@@ -7,6 +7,7 @@
 #include "../Cell/Cell.h"
 #include "../IntCell/IntCell.h"
 #include "../DoubleCell/DoubleCell.h"
+#include "../BlankCell/BlankCell.h"
 
 #include "../Spreadsheet/Spreadsheet.h"
 
@@ -68,7 +69,7 @@ FormulaCell::FormulaCell(const char *value, Spreadsheet *spreadsheet) : _spreads
 }
 
 unsigned FormulaCell::getWidth() const {
-    return 6;
+    return _formulaResult->getWidth();
 }
 
 void FormulaCell::printCell(std::ostream &out) const {
@@ -76,10 +77,12 @@ void FormulaCell::printCell(std::ostream &out) const {
 //        parseCells();
 //    }
 
-    out << "= TEST";
+//    out << "= TEST";
+    _formulaResult->printCell(out);
 }
 
 bool FormulaCell::isReferenceValid(const char *value) {
+    // TODO !!!: COULD BE WITH MORE THEN 4 LETTERS- R20C1
     if (strlen(value) != 4) {
         return false;
     }
@@ -93,40 +96,92 @@ bool FormulaCell::isReferenceValid(const char *value) {
     }
 
     return true;
-};
+}
 
-Cell *FormulaCell::parseOperand(const MyString &value) {
+void FormulaCell::parseOperandResult(const MyString &value, double &result) {
     if (isNumber(value.c_str())) {
         if (getCharCountInArray(value.c_str(), '.') == 1) {
-            return new DoubleCell(value.c_str());
+            result = parseDouble(value.c_str());
+        } else {
+            result = parseInt(value.c_str());
         }
-        else {
-            return new IntCell(value.c_str());
-        }
-    }
-    else if (value[0] == 'R') {
+        return;
+    } else if (value[0] == 'R') {
+        // TODO !!!: COULD BE WITH MORE THEN 4 LETTERS- R20C1
         if (isReferenceValid(value.c_str())) {
-            return _spreadsheet->getCellByIndex(value[1] - '0', value[3] - '0');
+//            return _spreadsheet->getCellByIndex(value[1] - '0' - 1, value[3] - '0' - 1);
+            result = _spreadsheet->getCellByIndex(value[1] - '0' - 1, value[3] - '0' - 1)->getOperationValue();
+            return;
         }
     }
 
     throw std::invalid_argument("Invalid type!");
 }
 
+void FormulaCell::parseOperandResult(const Cell *value, double &result) {
+    result = value->getOperationValue();
+}
 
 void FormulaCell::parseCell() {
     Vector<SharedPointer<Cell>> parsedCells;
 
-    for (int i = 0, operandIndex = 0; i < _operators.getSize(); ++i, operandIndex += 2) {
-        if (_operators[i] == 'b') {
+    try {
+
+        for (int i = 0, operandIndex = 0; i < _operators.getSize(); ++i) {
+            double valueOne = 0;
+            double valueTwo = 0;
+
+            char curOperator = _operators[i];
+
+            if (curOperator == 'b') {
+                parseOperandResult(parsedCells.popBack().get(), valueOne);
+                parseOperandResult(_operands[operandIndex], valueTwo);
+
+                curOperator = _operators[i + 1];
+                operandIndex += 1;
+            }
+            else {
+                parseOperandResult(_operands[operandIndex], valueOne);
+                parseOperandResult(_operands[operandIndex + 1], valueTwo);
+
+                operandIndex += 2;
+            }
+
+            double result = 0;
+            switch (curOperator) {
+                case '^': result = powerNumber(valueOne, valueTwo); break;
+                case '*': result = valueOne * valueTwo; break;
+                case '/': {
+                    if (valueTwo == 0) {
+                        throw std::invalid_argument("Division by zero!");
+                    }
+                    result = valueOne / valueTwo;
+                    break;
+                }
+                case '+': result = valueOne + valueTwo; break;
+                case '-': result = valueOne - valueTwo; break;
+                default: break;
+            }
+
+            if (result == 0) {
+                parsedCells.pushBack(new BlankCell());
+            } else if (result - (int)result < 0.000001) {
+                parsedCells.pushBack(new IntCell((int) result));
+            }
+            else {
+                parsedCells.pushBack(new DoubleCell(result));
+            }
 
         }
 
-        Cell *firstOperand = parseOperand(_operands[operandIndex]);
-        Cell *secondOperand = parseOperand(_operands[operandIndex + 1]);
-
-//        if ()
+        _formulaResult = parsedCells.popBack();
     }
+    catch (std::invalid_argument &exc) {
+        _formulaResult = new StringCell("ERROR");
+        throw exc;
+    }
+}
 
-//    this->parsedResult = ...
+double FormulaCell::getOperationValue() const {
+    return _formulaResult->getOperationValue();
 }

@@ -28,6 +28,33 @@ unsigned getNumLen(int num) {
     return ctr;
 }
 
+unsigned getNumLen(double num) {
+    if (num == 0) {
+        return 1;
+    }
+
+    int length = 0;
+    long long intPart = static_cast<long long>(num);
+
+    while (intPart != 0) {
+        intPart /= 10;
+        length++;
+    }
+
+    double decimalPart = num - static_cast<double>(intPart);
+
+    if (decimalPart != 0) {
+        length++;
+
+        while (decimalPart - static_cast<long long>(decimalPart) > 0.001) {
+            decimalPart *= 10;
+            length++;
+        }
+    }
+
+    return length;
+}
+
 unsigned getCharCountInArray(const char *arr, char ch) {
     unsigned ctr = 0;
     for (int i = 0; arr[i] != '\0'; ++i) {
@@ -197,4 +224,12 @@ bool isNumber(const char* str) {
     }
 
     return isNumber;
+}
+
+double powerNumber(double base, int exponent) {
+    double result = 1.0;
+    for (int i = 0; i < exponent; i++) {
+        result *= base;
+    }
+    return result;
 }
