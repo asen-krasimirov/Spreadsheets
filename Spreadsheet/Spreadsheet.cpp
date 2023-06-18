@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include "Spreadsheet.h"
 
 #include "../utils/utils.h"
@@ -19,7 +20,7 @@ void Spreadsheet::fillRow(Row &row, size_t blankCellsToAdd) {
     }
 }
 
-void Spreadsheet::saveCellWhiteSpaces(Row& row) {
+void Spreadsheet::saveCellWhiteSpaces(Row &row) {
     for (int i = 0; i < row._cells.getSize(); ++i) {
         size_t curLen = row._cells[i]->getWidth();
         if (curLen > _cellWhiteSpaces[i]) {
@@ -28,28 +29,34 @@ void Spreadsheet::saveCellWhiteSpaces(Row& row) {
     }
 }
 
-Spreadsheet::Spreadsheet(const char *fileName) {
+Spreadsheet::Spreadsheet() : _fileName("") {
+
+}
+
+Spreadsheet::Spreadsheet(const char *fileName) : _fileName(fileName) {
     loadFile(fileName);
 }
 
 void Spreadsheet::loadFile(const char *fileName) {
-    // TODO: Delete old data before reading new
+    clearData();
+    _fileName = fileName;
+
     std::ifstream in(fileName);
 
     if (!in.is_open()) {
-        throw std::ios_base::failure("File did not open!");
+        throw std::invalid_argument("File did not open! Or file name is incorrect!");
     }
 
     char buffer[MAX_BUFFER_SIZE];
-
+    int rowIndex = 1;
     // TODO: validate table format (row format, cell format, ...)
     while (!in.eof()) {
         in.getline(buffer, MAX_BUFFER_SIZE);
-        readRow(buffer, ',');
+        readRow(rowIndex++, buffer, ',');
     }
 
     for (int i = 0; i < _formulaCells.getSize(); ++i) {
-        dynamic_cast<FormulaCell*>(_formulaCells[i].get())->parseCell(); // TODO: make prettier
+        dynamic_cast<FormulaCell *>(_formulaCells[i].get())->parseCell();
     }
 
     for (int i = 0; i < _biggestCellCount; ++i) {
@@ -66,7 +73,35 @@ void Spreadsheet::loadFile(const char *fileName) {
     in.close();
 }
 
-void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
+void Spreadsheet::clearData() {
+    _rows.clear();
+    _cellWhiteSpaces.clear();
+    _formulaCells.clear();
+    _biggestCellCount = 0;
+    _fileName = "";
+}
+
+void Spreadsheet::save() const {
+    if (_fileName == "") {
+        throw std::logic_error("No file loaded!");
+    } else {
+        saveToFile(_fileName.c_str());
+    }
+}
+
+void Spreadsheet::saveToFile(const char *fileName) const {
+    std::ofstream out(fileName);
+
+    if (!out.is_open()) {
+        throw std::invalid_argument("File did not open! Or file name is incorrect!");
+    }
+
+    print(out);
+
+    out.close();
+}
+
+void Spreadsheet::readRow(int rowIndex, const char *buffer, char delimiter = ',') {
     std::stringstream ss(buffer);
 
     Row newRow;
@@ -78,28 +113,33 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
         ss.getline(value, MAX_BUFFER_SIZE, delimiter);
         removeWhiteSpaces(value);
 
-        if (value[0] == '"') {
+        if (value[0] == '"' && value[std::strlen(value) - 1] == '"') {
             parseEscapeSequences(value);
             removeSurroundingChars(value, '"', 1);
             newRow._cells.pushBack(new StringCell(value));
-        }
-        else if (isNumber(value)){
+        } else if (isNumber(value)) {
             if (getCharCountInArray(value, '.') == 1) {
-                 newRow._cells.pushBack(new DoubleCell(value));
-            }
-            else {
+                newRow._cells.pushBack(new DoubleCell(value));
+            } else {
                 newRow._cells.pushBack(new IntCell(value));
             }
-        }
-        else if (value[0] == '=') {
+        } else if (value[0] == '=') {
             removeSurroundingChars(value, '=');
 
             SharedPointer<Cell> formulaCell = new FormulaCell(value, this);
             newRow._cells.pushBack(formulaCell);
             _formulaCells.pushBack(formulaCell);
-        }
-        else {
+        } else if (value[0] == '\0') {
             newRow._cells.pushBack(new BlankCell());
+        } else {
+            MyString excMessage = "Error: row ";
+            excMessage += rowIndex;
+            excMessage += ", col ";
+            excMessage += curCellCount;
+            excMessage += " ";
+            excMessage += value;
+            excMessage += " is unknown data type!";
+            throw std::invalid_argument(excMessage.c_str());
         }
 
         curCellCount++;
@@ -112,30 +152,34 @@ void Spreadsheet::readRow(const char *buffer, char delimiter = ',') {
     _rows.pushBack(std::move(newRow));
 }
 
-void Spreadsheet::print() const {
-    for (int i = 0; i < _rows.getSize(); ++i) {
-        const Row &curRow = _rows[i];
+void Spreadsheet::print(std::ostream &out) const {
+    if (_fileName == "") {
+        throw std::logic_error("No file loaded!");
+    } else {
+        for (int i = 0; i < _rows.getSize(); ++i) {
+            const Row &curRow = _rows[i];
 
-        printRow(curRow);
+            printRow(out, curRow);
 
-        std::cout << std::endl;
+            out << std::endl;
+        }
     }
 }
 
-void Spreadsheet::printRow(const Row &curRow) const {
+void Spreadsheet::printRow(std::ostream &out, const Row &curRow) const {
     for (int i = 0; i < curRow._cells.getSize(); ++i) {
-        curRow._cells[i]->printCell(std::cout);
+        curRow._cells[i]->printCell(out);
 
-        printWhiteSpaces(curRow, i);
+        printWhiteSpaces(out, curRow, i);
 
-        std::cout << " | ";
+        out << " | ";
     }
 }
 
-void Spreadsheet::printWhiteSpaces(const Row &curRow, int rowIndex) const {
+void Spreadsheet::printWhiteSpaces(std::ostream &out, const Row &curRow, int rowIndex) const {
     size_t whiteSpaces = _cellWhiteSpaces[rowIndex] - curRow._cells[rowIndex]->getWidth();
     for (int j = 0; j < whiteSpaces; ++j) {
-        std::cout << " ";
+        out << " ";
     }
 }
 
@@ -148,4 +192,36 @@ Cell *Spreadsheet::getCellByIndex(size_t rowIndex, size_t cellIndex) {
     }
 
     return _rows[rowIndex]._cells[cellIndex].operator->();
+}
+
+void Spreadsheet::edit(size_t rowIndex, size_t cellIndex, const char *newValue) {
+    char *value = new char[strlen(newValue) + 1];
+    strcpy(value, newValue);
+
+    if (rowIndex >= _rows.getSize() || cellIndex >= _rows[rowIndex]._cells.getSize()) {
+        throw std::invalid_argument("Indexes out of bounds!");
+    }
+
+    removeWhiteSpaces(value);
+
+    if (value[0] == '"' && value[std::strlen(value) - 1] == '"') {
+        parseEscapeSequences(value);
+        removeSurroundingChars(value, '"', 1);
+        _rows[rowIndex]._cells[cellIndex].reset(new StringCell(value));
+    } else if (isNumber(value)) {
+        if (getCharCountInArray(value, '.') == 1) {
+            _rows[rowIndex]._cells[cellIndex].reset(new DoubleCell(value));
+        } else {
+            _rows[rowIndex]._cells[cellIndex].reset(new IntCell(value));
+        }
+    } else if (value[0] == '=') {
+        removeSurroundingChars(value, '=');
+
+        _rows[rowIndex]._cells[cellIndex].reset(new FormulaCell(value, this));
+        dynamic_cast<FormulaCell *>(_rows[rowIndex]._cells[cellIndex].get())->parseCell();
+    } else if (value[0] == '\0') {
+        _rows[rowIndex]._cells[cellIndex].reset(new BlankCell());
+    } else {
+        throw std::invalid_argument("Unknown type entered!");
+    }
 }

@@ -29,3 +29,5 @@ void parseEscapeSequences(char* str);
 bool isNumber(const char* str);
 
 double powerNumber(double base, int exponent);
+
+void intToCharArray(int number, char* charArray, int arraySize);

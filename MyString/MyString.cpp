@@ -1,5 +1,7 @@
+// MyString from Angel Dimitriev's repo
 #include "MyString.h"
 #include <cstring>
+#include "../utils/utils.h"
 
 #pragma warning (disable : 4996)
 
@@ -151,6 +153,17 @@ MyString& MyString::operator+=(const MyString& other)
     return *this;
 }
 
+MyString& MyString::operator+=(int num)
+{
+    int arraySize = getNumLen(num) + 1;
+    char *arr = new char[arraySize];
+    intToCharArray(num, arr, arraySize);
+
+    *this += arr;
+
+    return *this;
+}
+
 char& MyString::operator[](size_t index)
 {
     return isSso() ? ssoData[index] : _data[index];
@@ -160,6 +173,15 @@ char MyString::operator[](size_t index) const
 {
     return isSso() ? ssoData[index] : _data[index];
 }
+
+std::istream& operator>>(std::istream& in, MyString& obj) {
+    char buffer[1024];
+    in.getline(buffer, 1024);
+    obj = buffer;
+
+    return in;
+}
+
 std::ostream& operator<<(std::ostream& os, const MyString& obj)
 {
     return os << obj.c_str();

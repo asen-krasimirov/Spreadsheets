@@ -1,18 +1,19 @@
-//#include "CommandMenu/CommandMenu.h"
+#include "CommandMenu/CommandMenu.h"
 
-#include "Spreadsheet/Spreadsheet.h"
+//#include "Spreadsheet/Spreadsheet.h"
 
 #include "utils/utils.h"
 
-#include "StringCell/StringCell.h"
+//#include "StringCell/StringCell.h"
 
 int main() {
-//    CommandMenu commandMenu;
+    CommandMenu commandMenu;
 
-//    return commandMenu.run();
+    commandMenu.run();
 
-    Spreadsheet sp("file.txt");
+    return 0;
 
-    sp.print();
+//    Spreadsheet sp("file.txt");
 
+//    sp.print();
 }

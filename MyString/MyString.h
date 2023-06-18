@@ -34,6 +34,7 @@ public:
     MyString& operator=(MyString&& other) noexcept;
 
     MyString& operator+=(const MyString& other);
+    MyString& operator+=(int number);
 
     const char* c_str() const;
     size_t length() const;
@@ -48,6 +49,7 @@ public:
     friend MyString operator+(const MyString& lhs, const MyString& rhs);
 };
 
+std::istream& operator>>(std::istream& os, MyString& obj);
 std::ostream& operator<<(std::ostream& os, const MyString& obj);
 
 bool operator<(const MyString& lhs, const MyString& rhs);

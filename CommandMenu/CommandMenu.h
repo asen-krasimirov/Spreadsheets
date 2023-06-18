@@ -13,6 +13,6 @@ private:
 public:
     CommandMenu();
 
-    int run();
+    void run();
 
 };

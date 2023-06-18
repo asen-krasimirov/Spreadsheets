@@ -234,3 +234,34 @@ double powerNumber(double base, int exponent) {
     }
     return result;
 }
+
+void intToCharArray(int number, char* charArray, int arraySize) {
+    int i = 0;
+    bool isNegative = false;
+
+    if (number < 0) {
+        isNegative = true;
+        number = -number;
+    }
+
+    do {
+        charArray[i++] = '0' + (number % 10);
+        number /= 10;
+    } while (number != 0 && i < arraySize - 1);
+
+    if (isNegative && i < arraySize - 1) {
+        charArray[i++] = '-';
+    }
+
+    charArray[i] = '\0';
+
+    int start = 0;
+    int end = i - 1;
+    while (start < end) {
+        char temp = charArray[start];
+        charArray[start++] = charArray[end];
+        charArray[end--] = temp;
+    }
+
+    charArray[arraySize] = '\0';
+}
