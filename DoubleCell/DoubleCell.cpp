@@ -1,9 +1,5 @@
-#include <cstring>
-
 #include "DoubleCell.h"
 #include "../utils/utils.h"
-
-#include <sstream> // temp
 
 void DoubleCell::setValue(double value) {
     _value = value;

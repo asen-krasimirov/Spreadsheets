@@ -18,20 +18,14 @@ private:
 
     SharedPointer<Cell> _formulaResult = nullptr;
 
-//    void setValue(double value);
-//    void setLength(unsigned length);
-
     void extractOperation(MyString &value, const char *operatorSymbol);
 
     void parseOperandResult(const MyString &value, double &result);
-    void parseOperandResult(const Cell *value, double &result);
-
-    static bool isReferenceValid(const char *value);
 
 public:
     explicit FormulaCell(const char *value, Spreadsheet *spreadsheet);
 
-    void parseCell();  // TODO: make func- example: parse R1C1 to double
+    void parseCell();
 
     unsigned getWidth() const override;
     void printCell(std::ostream &out) const override;

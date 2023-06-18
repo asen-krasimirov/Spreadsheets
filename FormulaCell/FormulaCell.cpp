@@ -11,17 +11,10 @@
 
 #include "../Spreadsheet/Spreadsheet.h"
 
-//template<typename T>
-//class SharedPointer;
-//class Cell;
-//class DoubleCell;
-//class IntCell;
-
 namespace {
     bool isOperator(char ch) {
         return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^';
     }
-    const size_t REFERENCE_NUM_LIMIT = 10000;
 }
 
 void FormulaCell::extractOperation(MyString &value, const char *operators) {
@@ -74,29 +67,7 @@ unsigned FormulaCell::getWidth() const {
 }
 
 void FormulaCell::printCell(std::ostream &out) const {
-//    if (!isParsed) {
-//        parseCells();
-//    }
-
-//    out << "= TEST";
     _formulaResult->printCell(out);
-}
-
-bool FormulaCell::isReferenceValid(const char *value) {
-    // TODO !!!: COULD BE WITH MORE THEN 4 LETTERS- R20C1
-    if (strlen(value) != 4) {
-        return false;
-    }
-
-    if (value[0] != 'R' || value[2] != 'C') {
-        return false;
-    }
-
-    if (!isDigit(value[1]) || !isDigit(value[3])) {
-        return false;
-    }
-
-    return true;
 }
 
 void FormulaCell::parseOperandResult(const MyString &value, double &result) {
@@ -138,10 +109,6 @@ void FormulaCell::parseOperandResult(const MyString &value, double &result) {
     }
 
     throw std::invalid_argument("Invalid type!");
-}
-
-void FormulaCell::parseOperandResult(const Cell *value, double &result) {
-    result = value->getOperationValue();
 }
 
 void FormulaCell::parseCell() {
