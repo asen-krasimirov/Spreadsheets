@@ -128,6 +128,8 @@ public:
     void print(std::ostream &out = std::cout) const;
     void edit(size_t rowIndex, size_t cellIndex, const char *newValue);
 
+    void parseFormulaCells();
+
     void loadFile(const char *fileName);
     void clearData();
     void save() const;

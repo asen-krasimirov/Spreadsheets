@@ -50,9 +50,7 @@ void Spreadsheet::loadFile(const char *fileName) {
         readRow(rowIndex++, buffer, ',');
     }
 
-    for (int i = 0; i < _formulaCells.getSize(); ++i) {
-        dynamic_cast<FormulaCell *>(_formulaCells[i].get())->parseCell();
-    }
+    parseFormulaCells();
 
     for (int i = 0; i < _biggestCellCount; ++i) {
         _cellWhiteSpaces.pushBack(0);
@@ -214,6 +212,7 @@ void Spreadsheet::edit(size_t rowIndex, size_t cellIndex, const char *newValue) 
         removeSurroundingChars(value, '=');
 
         _rows[rowIndex]._cells[cellIndex].reset(new FormulaCell(value, this));
+        _formulaCells.pushBack(_rows[rowIndex]._cells[cellIndex].get());
         dynamic_cast<FormulaCell *>(_rows[rowIndex]._cells[cellIndex].get())->parseCell();
     } else if (value[0] == '\0') {
         _rows[rowIndex]._cells[cellIndex].reset(new BlankCell());
@@ -222,6 +221,12 @@ void Spreadsheet::edit(size_t rowIndex, size_t cellIndex, const char *newValue) 
     }
 
     saveCellWhiteSpaces(_rows[rowIndex]);
+}
+
+void Spreadsheet::parseFormulaCells() {
+    for (int i = 0; i < _formulaCells.getSize(); ++i) {
+        dynamic_cast<FormulaCell *>(_formulaCells[i].get())->parseCell();
+    }
 }
 
 // IntCell functions implementation

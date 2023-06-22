@@ -17,6 +17,7 @@ void CommandMenu::printCommands() {
     std::cout << "-> save as <NewFileName>" << std::endl;
     std::cout << "-> print" << std::endl;
     std::cout << "-> edit <Row> <Column> <NewValue>" << std::endl;
+    std::cout << "-> parseFormulas" << std::endl;
 
     std::cout << "-> exit" << std::endl;
 }
@@ -106,6 +107,10 @@ void CommandMenu::run() {
                     catch (std::invalid_argument &exc) {
                         std::cout << exc.what();
                     }
+                } else if (strcmp(command, "parseFormulas") == 0) {
+                    spreadsheet.parseFormulaCells();
+
+                    std::cout << "Formula cells parsed successfully!";
                 } else if (strcmp(command, "exit") == 0) {
                     spreadsheet.clearData();
                     break;
