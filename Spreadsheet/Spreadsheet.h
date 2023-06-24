@@ -78,6 +78,9 @@ private:
         BlankCell();
         Cell *clone() override;
 
+        unsigned getWidth() const override;
+        void printCell(std::ostream &out) const override;
+
         double getOperationValue() const override;
 
     };
@@ -125,7 +128,7 @@ public:
     Spreadsheet();
     explicit Spreadsheet(const char *fileName);
 
-    void print(std::ostream &out = std::cout) const;
+    void print(std::ostream &out = std::cout, char delimiter = '|') const;
     void edit(size_t rowIndex, size_t cellIndex, const char *newValue);
 
     void parseFormulaCells();
@@ -143,7 +146,7 @@ private:
     static void fillRow(Row &row, size_t blankCellsToAdd);
     void saveCellWhiteSpaces(Row& row);
 
-    void printRow(std::ostream &out, const Row &curRow) const;
+    void printRow(std::ostream &out, const Row &curRow, char delimiter = '|') const;
     void printWhiteSpaces(std::ostream &out, const Row &curRow, int rowIndex) const;
 
 };

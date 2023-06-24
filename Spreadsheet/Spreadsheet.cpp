@@ -89,7 +89,7 @@ void Spreadsheet::saveToFile(const char *fileName) const {
         throw std::invalid_argument("File did not open! Or file name is incorrect!");
     }
 
-    print(out);
+    print(out, ',');
 
     out.close();
 }
@@ -144,14 +144,14 @@ void Spreadsheet::readRow(int rowIndex, const char *buffer, char delimiter = ','
     _rows.pushBack(std::move(newRow));
 }
 
-void Spreadsheet::print(std::ostream &out) const {
+void Spreadsheet::print(std::ostream &out, char delimiter) const {
     if (_fileName == "") {
         throw std::logic_error("No file loaded!");
     } else {
         for (int i = 0; i < _rows.getSize(); ++i) {
             const Row &curRow = _rows[i];
 
-            printRow(out, curRow);
+            printRow(out, curRow, delimiter);
 
             out << std::fixed << std::setprecision(4);   // Double padding fix
 
@@ -160,13 +160,13 @@ void Spreadsheet::print(std::ostream &out) const {
     }
 }
 
-void Spreadsheet::printRow(std::ostream &out, const Row &curRow) const {
+void Spreadsheet::printRow(std::ostream &out, const Row &curRow, char delimiter) const {
     for (int i = 0; i < curRow._cells.getSize(); ++i) {
         curRow._cells[i]->printCell(out);
 
         printWhiteSpaces(out, curRow, i);
 
-        out << " | ";
+        out << " " << delimiter << " ";
     }
 }
 
@@ -313,11 +313,11 @@ Spreadsheet::Cell *Spreadsheet::StringCell::clone() {
 }
 
 unsigned Spreadsheet::StringCell::getWidth() const {
-    return _value.length();
+    return _value.length() + 2;
 }
 
 void Spreadsheet::StringCell::printCell(std::ostream &out) const {
-    out << _value;
+    out << "\"" << _value << "\"";
 }
 
 double Spreadsheet::StringCell::getOperationValue() const {
@@ -340,6 +340,14 @@ Spreadsheet::BlankCell::BlankCell() : StringCell("") {
 
 Spreadsheet::Cell *Spreadsheet::BlankCell::clone() {
     return new BlankCell(*this);
+}
+
+unsigned Spreadsheet::BlankCell::getWidth() const {
+    return 0;
+}
+
+void Spreadsheet::BlankCell::printCell(std::ostream &out) const {
+    out << "";
 }
 
 double Spreadsheet::BlankCell::getOperationValue() const {
