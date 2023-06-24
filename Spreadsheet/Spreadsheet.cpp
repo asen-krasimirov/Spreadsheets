@@ -75,14 +75,14 @@ void Spreadsheet::clearData() {
 }
 
 void Spreadsheet::save() const {
-    if (_fileName == "") {
-        throw std::logic_error("No file loaded!");
-    } else {
-        saveToFile(_fileName.c_str());
-    }
+    saveToFile(_fileName.c_str());
 }
 
 void Spreadsheet::saveToFile(const char *fileName) const {
+    if (strcmp(fileName, "") == 0) {
+        throw std::logic_error("No file loaded!");
+    }
+
     std::ofstream out(fileName);
 
     if (!out.is_open()) {
